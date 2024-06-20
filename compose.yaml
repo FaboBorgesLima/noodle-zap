@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: backend/
+    develop:
+      watch:
+        - action: sync
+          path: ./backend/src
+          target: /app/src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+    env_file:
+      - .env
+  mysql:
+    build: db/mysql
+    env_file:
+      - .env
+  mongo:
+    build: db/mongo
+    env_file:
+      - .env

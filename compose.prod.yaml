@@ -1,0 +1,24 @@
+services:
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile.prod
+    env_file:
+      - .env
+  mysql:
+    build: db/mysql
+    env_file:
+      - .env
+    volumes:
+      - mysql_data:/var/lib/mysql
+  mongo:
+    build: db/mongo
+    env_file:
+      - .env
+    volumes:
+      - mongo_data:/data
+volumes:
+  mysql_data:
+    external: false
+  mongo_data:
+    external: false
