@@ -6,5 +6,6 @@ export const env = <
         MYSQL_DATABASE: string;
         MYSQL_USER: string;
         MYSQL_PASSWORD: string;
+        HMAC_KEY: string;
     }
 >process.env;

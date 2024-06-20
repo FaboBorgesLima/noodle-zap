@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "tsc -p .",
-    "dev":"nodemon src/index.ts",
+    "dev": "nodemon src/index.ts",
     "start": "node build/"
   },
   "author": "",
@@ -17,9 +17,12 @@
     "mysql2": "^3.10.1"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@types/express": "^4.17.21",
     "@types/node": "^20.14.6",
+    "jest": "^29.7.0",
     "nodemon": "^3.1.4",
+    "ts-jest": "^29.1.5",
     "ts-node": "^10.9.2"
   }
 }
