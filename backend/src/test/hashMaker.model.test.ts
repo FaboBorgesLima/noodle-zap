@@ -1,8 +1,8 @@
 import { describe, expect, it, test } from "@jest/globals";
 import { HashMaker } from "../model/hashMaker.model";
 
-describe("hash model", () => {
-    test("right length", () => {
+describe("hash maker", () => {
+    test("is right length", () => {
         for (let word = "a"; word.length < 1000; word += "a") {
             expect(HashMaker.make(word).length).toBe(44);
         }

@@ -1,4 +1,4 @@
-FROM mysql:8.0-bookworm
+FROM mysql:8.0-debian
 
 ENV MYSQL_ROOT_PASSWORD=mysql_password_root
 ENV MYSQL_DATABASE=mysql_db

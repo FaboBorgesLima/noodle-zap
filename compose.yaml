@@ -9,7 +9,9 @@ services:
           ignore:
             - node_modules/
         - action: rebuild
-          path: package.json
+          path: ./backend/package.json
+        - action: rebuild
+          path: ./backend/src/test
     env_file:
       - .env
   mysql:

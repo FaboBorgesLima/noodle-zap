@@ -5,4 +5,4 @@ CREATE TABLE IF NOT EXISTS user (
   user_password CHAR(44) NOT NULL,
   token CHAR(44) NOT NULL,
   PRIMARY KEY(user_id)
-);
+) ENGINE = InnoDB;
