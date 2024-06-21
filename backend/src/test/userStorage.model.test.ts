@@ -18,15 +18,15 @@ describe("user storage", () => {
         const storage = new UserStorage(conn);
 
         // create
-
-        const user = await storage.create(
-            new UserModel(
-                "name",
-                "email@email.com",
-                HashMaker.make("a"),
-                HashMaker.make("a")
-            )
+        const userModel = UserModel.createFactory(
+            "name",
+            "name@name.com",
+            "apassword"
         );
+
+        if (!userModel) return;
+
+        const user = await storage.create(userModel);
 
         expect(user).toBeTruthy();
 

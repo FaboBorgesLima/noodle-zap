@@ -63,11 +63,11 @@ export class UserStorage extends CommonStorage<UserModel> {
     }
 
     private schemaToModel(schema: UserSchema): UserModel {
-        return new UserModel(
+        return UserModel.loadFactory(
             schema.user_name,
             schema.email,
-            schema.token,
-            schema.user_password
+            schema.user_password,
+            schema.token
         );
     }
 
