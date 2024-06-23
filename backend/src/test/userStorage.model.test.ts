@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, test } from "@jest/globals";
 import { beforeEach } from "node:test";
-import { promiseConnection } from "../connection/mysql";
+import { connPoll } from "../connection/mysql";
 import { Connection } from "mysql2/promise";
 import { UserStorage } from "../model/userStorage.model";
 import { UserModel } from "../model/user.model";
@@ -11,7 +11,7 @@ describe("user storage", () => {
     test("can crud", async () => {
         if (env.IS_PROD?.toUpperCase() != "FALSE")
             throw Error("must be executed in dev or test enviroment");
-        const conn = await promiseConnection.getConnection();
+        const conn = await connPoll.getConnection();
 
         await conn.beginTransaction();
 

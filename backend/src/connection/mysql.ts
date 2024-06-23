@@ -1,7 +1,7 @@
 import { createConnection, createPool } from "mysql2/promise";
 import { env } from "../config/env";
 
-export const promiseConnection = createPool({
+export const connPoll = createPool({
     host: "mysql",
     user: env.MYSQL_USER,
     password: env.MYSQL_PASSWORD,

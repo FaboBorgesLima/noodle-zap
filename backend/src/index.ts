@@ -1,5 +1,19 @@
 import { env } from "process";
-import { promiseConnection } from "./connection/mysql";
+import { connPoll } from "./connection/mysql";
+import express from "express";
+import { apiRoutes } from "./routes/api.routes";
+import cors from "cors";
 
-async function main() {}
+async function main() {
+    const port = 8080;
+    const app = express();
+
+    app.use(cors({}));
+
+    app.use("/api", apiRoutes);
+
+    app.listen(port, () => {
+        console.log(`started at ${port}`);
+    });
+}
 main();
