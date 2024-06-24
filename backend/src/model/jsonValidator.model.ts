@@ -1,27 +1,33 @@
-export class JsonValidator {
-    static validate<T = string | void | number>(
-        paramValidators: { [k: string]: (param: unknown) => T },
+type Validator<T> = (param: unknown) => T;
+
+export class JsonValidator<Validators extends Record<string, Validator<any>>> {
+    constructor(private validators: Validators) {}
+
+    validate(
         toBeValidated: unknown
-    ): {
-        [k: string]: Exclude<T, void>;
-    } | void {
-        if (typeof toBeValidated != "object" || !toBeValidated) return;
+    ):
+        | { [K in keyof Validators]: Exclude<ReturnType<Validators[K]>, void> }
+        | void {
+        if (typeof toBeValidated !== "object" || toBeValidated === null) return;
 
-        const keys = Object.keys(paramValidators);
+        const keys = Object.keys(this.validators) as (keyof Validators)[];
 
-        const validated: { [k: string]: Exclude<T, void> } = {};
+        const validated: Partial<{
+            [K in keyof Validators]: ReturnType<Validators[K]>;
+        }> = {};
 
         for (const k of keys) {
-            // unsafe types
-            const param = (<any>toBeValidated)[k];
-            const tryValid = paramValidators[k](param);
-
-            if (!tryValid) return;
-
             //@ts-ignore
+            const param = (toBeValidated as Record<string, unknown>)[k];
+            const tryValid = this.validators[k](param);
+
+            if (tryValid === undefined || tryValid === null) return;
+
             validated[k] = tryValid;
         }
 
-        return validated;
+        return validated as {
+            [K in keyof Validators]: Exclude<ReturnType<Validators[K]>, void>;
+        };
     }
 }

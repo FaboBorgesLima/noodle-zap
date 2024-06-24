@@ -8,21 +8,18 @@ export class UserController {
     constructor(private userStorage: UserStorage) {}
 
     async create(req: Request, res: Response) {
-        const validated = JsonValidator.validate(
-            {
-                email: Validator.validateEmail,
-                password: Validator.validatePassword,
-                name: Validator.validateName,
-            },
-            req.body
-        );
+        const validator = new JsonValidator({
+            email: Validator.validateEmail,
+            password: Validator.validatePassword,
+            name: Validator.validateName,
+        });
+
+        const validated = validator.validate(req.body);
 
         if (!validated) {
             res.sendStatus(400);
             return;
         }
-
-        validated.email;
 
         const user = UserModel.createFactory(
             validated.name,
@@ -47,4 +44,6 @@ export class UserController {
             token: userInDb.getItem().getToken(),
         });
     }
+
+    async login(req: Request, res: Response) {}
 }
