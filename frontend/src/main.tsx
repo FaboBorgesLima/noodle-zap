@@ -3,8 +3,8 @@ import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import "./index.css";
-import { SignUp, Initial, Login, Home } from "./pages";
-import { Logged } from "./pages/logged/Logged";
+import { SignUp, Initial, Login } from "./pages";
+import { Home, Logged, Profile } from "./pages/logged";
 
 const router = createBrowserRouter([
     {
@@ -19,7 +19,10 @@ const router = createBrowserRouter([
     {
         path: "logged",
         element: <Logged />,
-        children: [{ path: "", element: <Home></Home> }],
+        children: [
+            { path: "", element: <Home></Home> },
+            { path: "profile", element: <Profile></Profile> },
+        ],
     },
 ]);
 

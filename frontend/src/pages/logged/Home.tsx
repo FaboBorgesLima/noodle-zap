@@ -1,11 +1,5 @@
-import { FC, useContext } from "react";
-import { LoggedContext } from "./loggedContext";
+import { FC } from "react";
 
 export const Home: FC = () => {
-    const userContext = useContext(LoggedContext);
-    return (
-        <>
-            <h1>{userContext?.user.name}</h1>
-        </>
-    );
+    return <></>;
 };
