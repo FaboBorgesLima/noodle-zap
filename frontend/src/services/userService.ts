@@ -80,4 +80,12 @@ export class UserService {
     static clearToken(): void {
         localStorage.removeItem(this.localStorageTokenAddress);
     }
+
+    static async logout(token: string): Promise<void> {
+        try {
+            await instance.delete("/api/user/auth/logout", {
+                headers: { Authorization: `bearer ${token}` },
+            });
+        } catch {}
+    }
 }

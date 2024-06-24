@@ -24,12 +24,12 @@ export class Validator {
     }
 
     /**
-     * @returns a name if it is valid
+     * @returns a name with 3 to 50 letters, without spaces before/after, or void
      */
     static validateName(name: unknown): string | void {
         if (typeof name != "string") return;
 
-        if (name.length < 3 || name.trim() != name) return;
+        if (name.length < 3 || name.length > 50 || name.trim() != name) return;
 
         return name;
     }

@@ -1,7 +1,10 @@
-import express from "express";
+import express, { Response } from "express";
 import { UserController } from "../controller/user.controller";
 import { connPoll } from "../connection/mysql";
 import { UserStorage } from "../model/userStorage.model";
+import { Auth } from "../middleware/auth.middleware";
+import { ItemInDb } from "../model/itemInDb.model";
+import { UserModel } from "../model/user.model";
 
 const apiRoutes = express.Router();
 
@@ -37,6 +40,25 @@ userRoutes.post("/login-token", async (req, res) => {
     const userController = new UserController(userStorage);
 
     await userController.loginViaToken(req, res);
+    conn.release();
+});
+
+userRoutes.use("/auth", async (req, res, next) => {
+    const conn = await connPoll.getConnection();
+
+    new Auth(new UserStorage(conn)).middleware(req, res, next);
+    conn.release();
+});
+
+userRoutes.delete("/auth/logout", async (req, res, next) => {
+    const conn = await connPoll.getConnection();
+    const userStorage = new UserStorage(conn);
+    const userController = new UserController(userStorage);
+
+    await userController.logout(
+        req,
+        <Response<any, { user: ItemInDb<UserModel> }>>res
+    );
     conn.release();
 });
 

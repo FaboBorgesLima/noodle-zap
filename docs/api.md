@@ -38,3 +38,11 @@ login-token :
         -   token:string
         -   email:string
     -   id: string
+
+logout :
+
+-   route: /api/user/auth/logout
+-   headers:
+    Authorization: bearer
+-   response:
+    ok or 400;
