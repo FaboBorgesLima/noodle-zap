@@ -8,6 +8,6 @@
 -   backend:
     -   run `docker compose up & docker compose watch`
 -   frontend:
-    -   run `npm start` in frontend folder
+    -   run `npm run dev` in frontend folder
 
 for more details look at the [docs](/documentation/)

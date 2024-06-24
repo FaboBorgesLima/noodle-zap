@@ -33,4 +33,17 @@ export class Validator {
 
         return name;
     }
+
+    static validateStringLength(
+        min: number,
+        max: number = min
+    ): (param: unknown) => string | void {
+        return (param) => {
+            if (typeof param != "string") return;
+
+            if (param.length < min || param.length > max) return;
+
+            return param;
+        };
+    }
 }

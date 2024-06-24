@@ -3,6 +3,7 @@ import { UserStorage } from "../model/userStorage.model";
 import { JsonValidator } from "../model/jsonValidator.model";
 import { Validator } from "../model/validator.model";
 import { UserModel } from "../model/user.model";
+import { HashMaker } from "../model/hashMaker.model";
 
 export class UserController {
     constructor(private userStorage: UserStorage) {}
@@ -39,11 +40,62 @@ export class UserController {
             return;
         }
 
+        res.json({ user: userInDb.getItem().toJson(), id: userInDb.getId() });
+    }
+
+    async login(req: Request, res: Response) {
+        const validator = new JsonValidator({
+            email: Validator.validateEmail,
+            password: Validator.validatePassword,
+        });
+
+        const validated = validator.validate(req.body);
+
+        if (!validated) {
+            res.sendStatus(400);
+
+            return;
+        }
+
+        const userInDb = await this.userStorage.getByEmailPassword(
+            validated.email,
+            HashMaker.make(validated.password)
+        );
+
+        if (!userInDb) {
+            res.sendStatus(400);
+
+            return;
+        }
+
         res.status(200).json({
+            user: userInDb.getItem().toJson(),
             id: userInDb.getId(),
-            token: userInDb.getItem().getToken(),
         });
     }
 
-    async login(req: Request, res: Response) {}
+    async loginViaToken(req: Request, res: Response) {
+        const validator = new JsonValidator({
+            token: Validator.validateStringLength(44),
+        });
+
+        const validated = validator.validate(req.body);
+
+        if (!validated) {
+            res.sendStatus(400);
+            return;
+        }
+
+        const userInDb = await this.userStorage.getByToken(validated.token);
+
+        if (!userInDb) {
+            res.sendStatus(400);
+            return;
+        }
+
+        res.status(200).json({
+            user: userInDb.getItem().toJson(),
+            id: userInDb.getId(),
+        });
+    }
 }

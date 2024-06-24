@@ -70,6 +70,45 @@ export class UserStorage extends CommonStorage<UserModel> {
         } catch {}
     }
 
+    async getByEmailPassword(
+        email: string,
+        hashPassword: string
+    ): Promise<void | ItemInDb<UserModel>> {
+        try {
+            const [usersSchemas] = await this.conn.query<UserSchema[]>(
+                "SELECT * FROM user WHERE email = ? AND user_password = ?",
+                [email, hashPassword]
+            );
+
+            if (usersSchemas.length == 0) return;
+
+            const userSchema = usersSchemas[0];
+
+            return new ItemInDb(
+                this.schemaToModel(userSchema),
+                userSchema.user_id.toString()
+            );
+        } catch {}
+    }
+
+    async getByToken(token: string): Promise<void | ItemInDb<UserModel>> {
+        try {
+            const [usersSchemas] = await this.conn.query<UserSchema[]>(
+                "SELECT * FROM user WHERE token = ?",
+                [token]
+            );
+
+            if (usersSchemas.length == 0) return;
+
+            const userSchema = usersSchemas[0];
+
+            return new ItemInDb(
+                this.schemaToModel(userSchema),
+                userSchema.user_id.toString()
+            );
+        } catch {}
+    }
+
     private schemaToModel(schema: UserSchema): UserModel {
         return UserModel.loadFactory(
             schema.user_name,

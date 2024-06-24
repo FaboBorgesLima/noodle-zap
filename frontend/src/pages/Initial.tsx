@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { InitialHeader } from "../components/InitialHeader";
+import { InitialHeader } from "../components/";
 
 export function Initial() {
     return (

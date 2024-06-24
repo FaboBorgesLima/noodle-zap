@@ -85,6 +85,10 @@ export class UserModel {
 
         return true;
     }
+
+    toJson() {
+        return { name: this.name, email: this.email, token: this.token };
+    }
 }
 
 export interface UserParams {

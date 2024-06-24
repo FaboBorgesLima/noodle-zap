@@ -6,4 +6,5 @@ export const connPoll = createPool({
     user: env.MYSQL_USER,
     password: env.MYSQL_PASSWORD,
     database: env.MYSQL_DATABASE,
+    connectionLimit: 10,
 });
