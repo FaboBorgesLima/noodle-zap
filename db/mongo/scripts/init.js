@@ -8,17 +8,19 @@ db.createCollection("posts", {
         $jsonSchema: {
             bsonType: "object",
             title: "posts object",
+            required: ["usr", "title", "text", "comments"],
             properties: {
                 usr: {
                     bsonType: "object",
                     title: "user that made the post",
+                    required: ["id", "name"],
                     properties: {
                         name: {
                             bsonType: "string",
                             minLength: 3,
                             maxLength: 255,
                         },
-                        usrId: {
+                        id: {
                             bsonType: "int",
                         },
                     },
@@ -38,14 +40,25 @@ db.createCollection("posts", {
                     items: {
                         bsonType: "object",
                         title: "user that made the comment",
+                        required: ["_id", "usr", "text"],
                         properties: {
-                            name: {
-                                bsonType: "string",
-                                minLength: 3,
-                                maxLength: 255,
+                            _id: {
+                                bsonType: "objectId",
                             },
-                            usrId: {
-                                bsonType: "int",
+                            usr: {
+                                title: "user that commented",
+                                bsonType: "object",
+                                required: ["id", "name"],
+                                properties: {
+                                    id: {
+                                        bsonType: "int",
+                                    },
+                                    name: {
+                                        bsonType: "string",
+                                        minLength: 3,
+                                        maxLength: 255,
+                                    },
+                                },
                             },
                             text: {
                                 bsonType: "string",

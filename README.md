@@ -10,4 +10,4 @@
 -   frontend:
     -   run `npm run dev` in frontend folder
 
-for more details look at the [docs](/documentation/)
+for more details look at the [docs](/docs/)
