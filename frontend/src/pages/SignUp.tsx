@@ -17,7 +17,7 @@ export const SignUp: FC = () => {
                         password,
                         email
                     );
-                    if (user) navigate("logged");
+                    if (user) navigate("/logged",{replace:true});
                 }}
                 className="flex flex-col gap-4 frame p-4"
             >
