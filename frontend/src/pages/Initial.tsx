@@ -22,7 +22,7 @@ export function Initial() {
     return (
         <>
             <InitialHeader></InitialHeader>
-            <main className="grow">
+            <main className="grow flex flex-col">
                 <Outlet></Outlet>
             </main>
         </>

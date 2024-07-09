@@ -9,7 +9,7 @@
         @apply text-white bg-pink-500 text-xl p-2 rounded-sm transition-all duration-300 hover:bg-purple-500;
     }
     .form-input {
-        @apply text-slate-900 dark:text-slate-100 text-xl p-2 rounded-sm focus-visible:outline-none bg-black/5 dark:bg-black/20;
+        @apply text-slate-900 dark:text-slate-100 text-xl p-2 rounded-sm focus-visible:outline-none bg-black/5 dark:bg-black/20 invalid:border-red-500 invalid:border invalid:border-solid;
     }
     .form-label {
         @apply text-2xl gap-2 flex flex-col dark:text-white font-bold;
