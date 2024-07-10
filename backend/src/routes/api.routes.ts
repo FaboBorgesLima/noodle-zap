@@ -50,7 +50,7 @@ userRoutes.use("/auth", async (req, res, next) => {
     conn.release();
 });
 
-userRoutes.delete("/auth/logout", async (req, res, next) => {
+userRoutes.delete("/auth/logout", async (req, res) => {
     const conn = await connPoll.getConnection();
     const userStorage = new UserStorage(conn);
     const userController = new UserController(userStorage);
@@ -59,6 +59,15 @@ userRoutes.delete("/auth/logout", async (req, res, next) => {
         req,
         <Response<any, { user: ItemInDb<UserModel> }>>res
     );
+    conn.release();
+});
+
+userRoutes.get("/find-by-name/:name", async (req, res) => {
+    const conn = await connPoll.getConnection();
+    const userStorage = new UserStorage(conn);
+    const userController = new UserController(userStorage);
+
+    await userController.findByName(req, res);
     conn.release();
 });
 

@@ -75,6 +75,26 @@ export class UserController {
         });
     }
 
+    async findByName(req: Request, res: Response) {
+        const validator = new JsonValidator({ name: Validator.validateName });
+
+        const validated = validator.validate(req.params);
+
+        if (!validated) {
+            res.sendStatus(400);
+            return;
+        }
+
+        const user = await this.userStorage.getByName(validated.name);
+
+        if (!user) {
+            res.sendStatus(404);
+            return;
+        }
+
+        res.json({ id: user.getId(), name: user.getItem().getName() });
+    }
+
     async loginViaToken(req: Request, res: Response) {
         const validator = new JsonValidator({
             token: Validator.validateStringLength(44),

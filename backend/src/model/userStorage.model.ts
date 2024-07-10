@@ -69,6 +69,21 @@ export class UserStorage extends CommonStorage<UserModel> {
             );
         } catch {}
     }
+    async getByName(name: string): Promise<void | ItemInDb<UserModel>> {
+        try {
+            const [usersSchemas] = await this.conn.query<UserSchema[]>(
+                "SELECT * FROM user WHERE user_name = ? LIMIT 1",
+                [name]
+            );
+            if (usersSchemas.length != 1) return;
+            const [user] = usersSchemas;
+
+            return new ItemInDb(
+                this.schemaToModel(user),
+                user.user_id.toString()
+            );
+        } catch {}
+    }
 
     async getByEmailPassword(
         email: string,
