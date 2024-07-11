@@ -8,9 +8,10 @@
 -   backend:
 
     -   copy .env.example to a .env file
+    -   run `npm i` for installing packages in the backend folder
 
 -   frontend:
-    -   run `npm i` for installing packages
+    -   run `npm i` for installing packages in the frontend folder
 
 # Running development setup
 

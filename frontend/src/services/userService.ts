@@ -88,4 +88,15 @@ export class UserService {
             });
         } catch {}
     }
+
+    static async getByName(
+        name: string
+    ): Promise<void | { name: string; id: string }> {
+        try {
+            const { data } = await instance.get<{ name: string; id: string }>(
+                `/api/user/find-by-name/${name}`
+            );
+            return data;
+        } catch {}
+    }
 }

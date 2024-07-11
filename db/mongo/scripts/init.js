@@ -8,7 +8,7 @@ db.createCollection("posts", {
         $jsonSchema: {
             bsonType: "object",
             title: "posts object",
-            required: ["usr", "title", "text", "comments"],
+            required: ["usr", "title", "text", "comments", "likes"],
             properties: {
                 usr: {
                     bsonType: "object",
@@ -64,6 +64,24 @@ db.createCollection("posts", {
                                 bsonType: "string",
                                 minLength: 3,
                                 maxLength: 500,
+                            },
+                        },
+                    },
+                },
+                likes: {
+                    bsonType: "array",
+                    items: {
+                        bsonType: "object",
+                        title: "user that liked the post",
+                        required: ["id", "name"],
+                        properties: {
+                            id: {
+                                bsonType: "int",
+                            },
+                            name: {
+                                bsonType: "string",
+                                minLength: 3,
+                                maxLength: 255,
                             },
                         },
                     },

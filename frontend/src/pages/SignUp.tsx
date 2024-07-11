@@ -53,7 +53,11 @@ export const SignUp: FC = () => {
                         return;
                     }
 
-                    setError({ ...error, email: "email already exits" });
+                    setError({
+                        ...error,
+                        email: "email or name already exits",
+                        name: "email or name already exits",
+                    });
                 }}
                 className="flex flex-col gap-4 frame p-4 lg:w-1/2 mx-auto"
             >
@@ -79,7 +83,11 @@ export const SignUp: FC = () => {
                         type="text"
                         placeholder="name"
                         required
-                        className="form-input"
+                        className={`form-input ${
+                            error.name
+                                ? "border border-solid border-red-500"
+                                : ""
+                        }`}
                         pattern=".{3,}"
                     ></input>
                 </label>
