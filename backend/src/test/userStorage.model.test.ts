@@ -51,6 +51,16 @@ describe("user storage", () => {
 
         expect(userRead.getItem().getName()).toBe("name2");
 
+        // get by name
+
+        const userByName = await storage.getByName("name2");
+
+        expect(userByName).toBeTruthy();
+
+        if (!userByName) return;
+
+        expect(userByName.getItem().getName()).toBe("name2");
+
         // delete
 
         await storage.delete(userRead.getId());
