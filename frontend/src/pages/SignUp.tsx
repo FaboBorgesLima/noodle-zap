@@ -53,11 +53,17 @@ export const SignUp: FC = () => {
                         return;
                     }
 
-                    setError({
-                        ...error,
-                        email: "email or name already exits",
-                        name: "email or name already exits",
-                    });
+                    const userByName = await UserService.getByName(name);
+
+                    const errorClone = { ...error };
+
+                    if (userByName) {
+                        errorClone.name = "name already exists";
+                    } else {
+                        errorClone.email = "email already exists";
+                    }
+
+                    setError(errorClone);
                 }}
                 className="flex flex-col gap-4 frame p-4 lg:w-1/2 mx-auto"
             >
