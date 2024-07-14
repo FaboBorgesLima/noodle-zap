@@ -8,12 +8,12 @@ db.createCollection("posts", {
         $jsonSchema: {
             bsonType: "object",
             title: "posts object",
-            required: ["usr", "title", "text", "comments", "likes"],
+            required: ["usr", "title", "text", "comments", "likes", "dt"],
             properties: {
                 usr: {
                     bsonType: "object",
                     title: "user that made the post",
-                    required: ["id", "name"],
+                    required: ["id", "name", "email"],
                     properties: {
                         name: {
                             bsonType: "string",
@@ -22,6 +22,9 @@ db.createCollection("posts", {
                         },
                         id: {
                             bsonType: "int",
+                        },
+                        email: {
+                            bsonType: "string",
                         },
                     },
                 },
@@ -40,7 +43,7 @@ db.createCollection("posts", {
                     items: {
                         bsonType: "object",
                         title: "user that made the comment",
-                        required: ["_id", "usr", "text"],
+                        required: ["_id", "usr", "text", "dt"],
                         properties: {
                             _id: {
                                 bsonType: "objectId",
@@ -48,7 +51,7 @@ db.createCollection("posts", {
                             usr: {
                                 title: "user that commented",
                                 bsonType: "object",
-                                required: ["id", "name"],
+                                required: ["id", "name", "email"],
                                 properties: {
                                     id: {
                                         bsonType: "int",
@@ -58,12 +61,18 @@ db.createCollection("posts", {
                                         minLength: 3,
                                         maxLength: 255,
                                     },
+                                    email: {
+                                        bsonType: "string",
+                                    },
                                 },
                             },
                             text: {
                                 bsonType: "string",
                                 minLength: 3,
                                 maxLength: 500,
+                            },
+                            dt: {
+                                bsonType: "date",
                             },
                         },
                     },
@@ -73,18 +82,35 @@ db.createCollection("posts", {
                     items: {
                         bsonType: "object",
                         title: "user that liked the post",
-                        required: ["id", "name"],
+                        required: ["dt", "usr"],
                         properties: {
-                            id: {
-                                bsonType: "int",
+                            usr: {
+                                bsonType: "object",
+                                title: "user that liked the post",
+                                required: ["is", "name", "email"],
+                                properties: {
+                                    id: {
+                                        bsonType: "int",
+                                    },
+                                    name: {
+                                        bsonType: "string",
+                                        minLength: 3,
+                                        maxLength: 255,
+                                    },
+                                    email: {
+                                        bsonType: "string",
+                                    },
+                                },
                             },
-                            name: {
-                                bsonType: "string",
-                                minLength: 3,
-                                maxLength: 255,
+
+                            dt: {
+                                bsonType: "date",
                             },
                         },
                     },
+                },
+                dt: {
+                    bsonType: "date",
                 },
             },
         },

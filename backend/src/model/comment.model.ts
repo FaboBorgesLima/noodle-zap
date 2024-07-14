@@ -1,22 +1,24 @@
 import { Int32 } from "mongodb";
 import { Validator } from "./validator.model";
+import { MongodbUserModel } from "./mongodbUser.model";
+import { ItemInDb } from "./itemInDb.model";
 
 export class CommentModel {
     protected constructor(
         private text: string,
-        private userName: string,
-        private userId: Int32
+        private user: ItemInDb<MongodbUserModel>,
+        private date: Date
     ) {}
 
     static loadFactory(
-        userName: string,
-        userId: Int32,
-        text: string
-    ): void | CommentModel {
-        const comment = new CommentModel("", "", userId);
+        text: string,
+        mongoUser: ItemInDb<MongodbUserModel>,
+        date: Date
+    ): CommentModel {
+        const comment = new CommentModel(text, mongoUser, date);
 
-        if (comment.setText(text) && comment.setUserName(userName))
-            return comment;
+        comment.setText(text);
+        return comment;
     }
 
     setText(text: string): boolean {
@@ -33,25 +35,11 @@ export class CommentModel {
         return this.text;
     }
 
-    setUserName(userName: string): boolean {
-        const validated = Validator.validateName(userName);
-
-        if (!validated) return false;
-
-        this.userName = validated;
-
-        return true;
+    getUser() {
+        return this.user;
     }
 
-    getUserName(): string {
-        return this.userName;
-    }
-
-    setUserId(userId: Int32) {
-        this.userId = userId;
-    }
-
-    getUserId(): Int32 {
-        return this.userId;
+    getDate(): Date {
+        return this.date;
     }
 }
