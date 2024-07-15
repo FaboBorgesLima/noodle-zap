@@ -9,4 +9,11 @@ export class MongodbUserModel {
     static factory(name: string, email: string): MongodbUserModel {
         return new MongodbUserModel(name, email);
     }
+
+    toJSON() {
+        return {
+            name: this.name,
+            email: this.email,
+        };
+    }
 }

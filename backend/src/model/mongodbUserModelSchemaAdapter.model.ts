@@ -2,6 +2,7 @@ import { Int32 } from "mongodb";
 import { MongodbUserSchema } from "../schema/mongodbUser.schema";
 import { ItemInDb } from "./itemInDb.model";
 import { MongodbUserModel } from "./mongodbUser.model";
+import { UserModel } from "./user.model";
 
 export class MongodbUserModelSchemaAdapter {
     static modelInDbToSchema(
@@ -20,6 +21,18 @@ export class MongodbUserModelSchemaAdapter {
         return new ItemInDb<MongodbUserModel>(
             MongodbUserModel.factory(schema.name, schema.email),
             schema.id.toString()
+        );
+    }
+
+    static userModelInDbToMongodbUserModel(
+        userModel: ItemInDb<UserModel>
+    ): ItemInDb<MongodbUserModel> {
+        return new ItemInDb<MongodbUserModel>(
+            MongodbUserModel.factory(
+                userModel.getItem().getName(),
+                userModel.getItem().getEmail()
+            ),
+            userModel.getId()
         );
     }
 }

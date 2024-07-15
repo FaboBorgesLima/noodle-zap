@@ -1,5 +1,3 @@
-import { ObjectId } from "mongodb";
-import { PostSchema } from "../schema/post.schema";
 import { CommentModel } from "./comment.model";
 import { ItemInDb } from "./itemInDb.model";
 import { LikeModel } from "./likeModel.model";
@@ -70,5 +68,19 @@ export class PostModel {
 
     getComments() {
         return this.comments;
+    }
+
+    toJSON() {
+        return {
+            text: this.text,
+            title: this.title,
+            comments: this.comments.map((comment) => ({
+                ...comment.getItem().toJSON(),
+                id: comment.getId(),
+            })),
+            likes: this.likes.map((like) => like.toJSON()),
+            date: this.date.getTime(),
+            user: { ...this.user.getItem().toJSON(), id: this.user.getId() },
+        };
     }
 }

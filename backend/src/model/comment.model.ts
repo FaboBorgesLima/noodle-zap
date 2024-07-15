@@ -42,4 +42,12 @@ export class CommentModel {
     getDate(): Date {
         return this.date;
     }
+
+    toJSON() {
+        return {
+            text: this.text,
+            date: this.date.getTime(),
+            user: { ...this.user.getItem().toJSON(), id: this.user.getId() },
+        };
+    }
 }

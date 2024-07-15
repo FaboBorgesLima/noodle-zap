@@ -13,4 +13,11 @@ export class LikeModel {
     static load(user: ItemInDb<MongodbUserModel>, date: Date) {
         return new LikeModel(user, date);
     }
+
+    toJSON() {
+        return {
+            user: this.user.getItem().toJSON(),
+            date: this.date.getTime(),
+        };
+    }
 }
