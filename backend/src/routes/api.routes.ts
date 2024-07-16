@@ -5,6 +5,9 @@ import { UserStorage } from "../model/userStorage.model";
 import { Auth } from "../middleware/auth.middleware";
 import { ItemInDb } from "../model/itemInDb.model";
 import { UserModel } from "../model/user.model";
+import { PostController } from "../controller/post.controller";
+import { PostStorage } from "../model/postStorage.model";
+import { mongoClient } from "../connection/mongo";
 
 const apiRoutes = express.Router();
 
@@ -13,6 +16,8 @@ apiRoutes.use((req, res, next) => {
     console.log(`${req.method} ${req.path}`);
     next();
 });
+
+// ----------------------------------------- user routes
 
 const userRoutes = express.Router();
 
@@ -72,5 +77,27 @@ userRoutes.get("/find-by-name/:name", async (req, res) => {
 });
 
 apiRoutes.use("/user", userRoutes);
+
+// ----------------------------------------- post routes
+
+const postRoutes = express.Router();
+
+postRoutes.use("/auth", async (req, res, next) => {
+    const conn = await connPoll.getConnection();
+
+    new Auth(new UserStorage(conn)).middleware(req, res, next);
+    conn.release();
+});
+
+postRoutes.post("/create", async (req, res, next) => {
+    const postController = new PostController(new PostStorage(mongoClient));
+
+    postController.create(
+        req,
+        <Response<any, { user: ItemInDb<UserModel> }>>res
+    );
+});
+
+apiRoutes.use("/post", postRoutes);
 
 export { apiRoutes };
