@@ -75,8 +75,41 @@ get user by name :
     -   code 200:
     `JSON
 {
-name:string
+name:string,
 id: string
 }`
     -   code 404:
 -   method: GET
+
+# Post route
+
+create:
+-   route: /api/post/auth/create
+-   headers: Authorization: bearer
+-   reponses:
+    -   code: 200 `JSON 
+    {
+        title:string,
+        text:string,
+        user:{
+            name:string,
+            email:string
+        },
+        comments: {
+            text:string,
+            date:number,
+            user:{
+                name:string,
+                email:string
+            },
+            }[],
+        likes:{
+            date:number,
+            user:{
+                name:string,
+                email:string
+            },
+        }[]
+    }
+    `
+-   method: POST
