@@ -13,7 +13,6 @@ export class MongodbUserModel {
     toJSON() {
         return {
             name: this.name,
-            email: this.email,
         };
     }
 }

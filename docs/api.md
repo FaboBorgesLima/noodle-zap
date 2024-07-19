@@ -93,21 +93,18 @@ create:
         text:string,
         user:{
             name:string,
-            email:string
         },
         comments: {
             text:string,
             date:number,
             user:{
                 name:string,
-                email:string
             },
             }[],
         likes:{
             date:number,
             user:{
                 name:string,
-                email:string
             },
         }[]
     }
