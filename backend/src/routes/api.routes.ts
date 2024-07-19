@@ -89,7 +89,7 @@ postRoutes.use("/auth", async (req, res, next) => {
     conn.release();
 });
 
-postRoutes.post("/create", async (req, res, next) => {
+postRoutes.post("/auth/create", async (req, res, next) => {
     const postController = new PostController(new PostStorage(mongoClient));
 
     postController.create(

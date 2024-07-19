@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import { SignUp, Initial, Login, Welcome } from "./pages";
 import { Home, Logged, Profile } from "./pages/logged";
+import { CreatePost } from "./pages/logged/CreatePost";
 
 const router = createBrowserRouter([
     {
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
         children: [
             { path: "", element: <Home></Home> },
             { path: "profile", element: <Profile></Profile> },
+            { path: "create-post", element: <CreatePost></CreatePost> },
         ],
     },
 ]);
