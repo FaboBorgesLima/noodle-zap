@@ -46,4 +46,16 @@ export class Validator {
             return param;
         };
     }
+
+    static validateUnsignInt(n: unknown): number | void {
+        let parsed = 0;
+        if (typeof n == "string") parsed = parseInt(n);
+        if (typeof n == "number") parsed = n;
+
+        if (parsed % 1 != 0) return;
+
+        if (parsed < 0) return;
+
+        return parsed;
+    }
 }

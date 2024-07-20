@@ -41,7 +41,7 @@ export class UserController {
             return;
         }
 
-        res.json({ user: userInDb.getItem().toJson(), id: userInDb.getId() });
+        res.json({ user: userInDb.getItem().toJSON(), id: userInDb.getId() });
     }
 
     async login(req: Request, res: Response) {
@@ -70,7 +70,7 @@ export class UserController {
         }
 
         res.status(200).json({
-            user: userInDb.getItem().toJson(),
+            user: userInDb.getItem().toJSON(),
             id: userInDb.getId(),
         });
     }
@@ -115,7 +115,7 @@ export class UserController {
         }
 
         res.status(200).json({
-            user: userInDb.getItem().toJson(),
+            user: userInDb.getItem().toJSON(),
             id: userInDb.getId(),
         });
     }

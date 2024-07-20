@@ -41,6 +41,39 @@ export class PostController {
             return;
         }
 
-        res.json({ ...item.getItem().toJSON(), id: item.getId() });
+        res.json(item.toJSON());
+    }
+
+    async getPage(
+        req: Request,
+        res: Response<any, { user: ItemInDb<UserModel> }>
+    ) {
+        const validator = new JsonValidator({
+            page: Validator.validateUnsignInt,
+            length: Validator.validateUnsignInt,
+        });
+
+        const validated = validator.validate(req.query);
+
+        if (!validated) {
+            res.send(400);
+            return;
+        }
+
+        const posts = await this.storage.getPage(
+            validated.page,
+            validated.length
+        );
+
+        if (!posts) {
+            res.send(500);
+            return;
+        }
+
+        console.debug(posts.map((post) => post.toJSON()));
+
+        res.json({
+            posts: posts.map((post) => post.toJSON()),
+        });
     }
 }

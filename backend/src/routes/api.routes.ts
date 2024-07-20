@@ -98,6 +98,15 @@ postRoutes.post("/auth/create", async (req, res, next) => {
     );
 });
 
+postRoutes.get("/auth/page", async (req, res, next) => {
+    const postController = new PostController(new PostStorage(mongoClient));
+
+    postController.getPage(
+        req,
+        <Response<any, { user: ItemInDb<UserModel> }>>res
+    );
+});
+
 apiRoutes.use("/post", postRoutes);
 
 export { apiRoutes };

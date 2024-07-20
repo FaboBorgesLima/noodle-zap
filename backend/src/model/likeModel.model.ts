@@ -1,7 +1,8 @@
+import { HasJSON } from "./hasJson.interface";
 import { ItemInDb } from "./itemInDb.model";
 import { MongodbUserModel } from "./mongodbUser.model";
 
-export class LikeModel {
+export class LikeModel implements HasJSON {
     readonly user: ItemInDb<MongodbUserModel>;
     readonly date: Date;
 

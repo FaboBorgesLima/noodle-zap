@@ -55,7 +55,7 @@ export class PostStorage extends CommonStorage<PostModel> {
             .find()
             .skip(page * pageSize);
 
-        let item = await query.next();
+        let item = await query.tryNext();
 
         for (let i = 0; i < pageSize && item; i++) {
             items.push(
@@ -64,6 +64,8 @@ export class PostStorage extends CommonStorage<PostModel> {
                     item._id.toHexString()
                 )
             );
+
+            item = await query.tryNext();
         }
 
         return items;

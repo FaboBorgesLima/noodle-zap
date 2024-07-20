@@ -32,6 +32,8 @@ export const CreatePost: FC<{}> = ({}) => {
 
                     if (!token) return;
                     console.log(await PostService.create(title, text, token));
+
+                    console.log(await PostService.getPage(0, 100, token));
                 }}
             >
                 <label htmlFor="" className="form-label text-center">

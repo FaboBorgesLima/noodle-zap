@@ -17,4 +17,19 @@ export class PostService {
             return data;
         } catch {}
     }
+
+    static async getPage(
+        page: number,
+        length: number,
+        token: string
+    ): Promise<{ posts: PostSchema[] } | void> {
+        const { data } = await instance.get<{ posts: PostSchema[] }>(
+            "/api/post/auth/page",
+            {
+                headers: { Authorization: `bearer ${token}` },
+                params: { page, length },
+            }
+        );
+        return data;
+    }
 }

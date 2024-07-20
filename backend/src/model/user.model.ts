@@ -1,8 +1,9 @@
 import { HashMaker } from "./hashMaker.model";
+import { HasJSON } from "./hasJson.interface";
 import { RandomTokenMaker } from "./randomTokenMaker.model";
 import { Validator } from "./validator.model";
 
-export class UserModel {
+export class UserModel implements HasJSON {
     protected constructor(
         protected name: string,
         protected email: string,
@@ -86,7 +87,7 @@ export class UserModel {
         return true;
     }
 
-    toJson() {
+    toJSON() {
         return { name: this.name, email: this.email, token: this.token };
     }
 }
