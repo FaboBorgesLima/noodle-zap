@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { Form } from "react-router-dom";
+import { Form, useNavigate } from "react-router-dom";
 import { PostService } from "../../services/postService";
 import { UserService } from "../../services/userService";
 
@@ -7,6 +7,7 @@ export const CreatePost: FC<{}> = ({}) => {
     const [title, setTitle] = useState("");
 
     const [text, setText] = useState("");
+    const navigate = useNavigate();
 
     const titleRef = useRef<HTMLTextAreaElement>(null);
     const textRef = useRef<HTMLTextAreaElement>(null);
@@ -33,7 +34,7 @@ export const CreatePost: FC<{}> = ({}) => {
                     if (!token) return;
                     console.log(await PostService.create(title, text, token));
 
-                    console.log(await PostService.getPage(0, 100, token));
+                    navigate("/logged");
                 }}
             >
                 <label htmlFor="" className="form-label text-center">
