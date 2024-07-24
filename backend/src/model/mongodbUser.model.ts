@@ -1,3 +1,5 @@
+import { UserModel } from "./user.model";
+
 export class MongodbUserModel {
     readonly name: string;
     readonly email: string;
@@ -8,6 +10,10 @@ export class MongodbUserModel {
 
     static factory(name: string, email: string): MongodbUserModel {
         return new MongodbUserModel(name, email);
+    }
+
+    static fromUser(user: UserModel): MongodbUserModel {
+        return new MongodbUserModel(user.getName(), user.getEmail());
     }
 
     toJSON() {

@@ -70,8 +70,6 @@ export class PostController {
             return;
         }
 
-        console.debug(posts.map((post) => post.toJSON()));
-
         res.json({
             posts: posts.map((post) => post.toJSON()),
         });

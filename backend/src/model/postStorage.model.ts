@@ -25,8 +25,15 @@ export class PostStorage extends CommonStorage<PostModel> {
             console.debug(e);
         }
     }
-    update(itemInDb: ItemInDb<PostModel>): Promise<ItemInDb<PostModel> | void> {
-        throw new Error("Method not implemented.");
+    async update(
+        itemInDb: ItemInDb<PostModel>
+    ): Promise<ItemInDb<PostModel> | void> {
+        this.db
+            .collection<PostSchema>(this.collectionName)
+            .updateOne(
+                { _id: ObjectId.createFromHexString(itemInDb.getId()) },
+                PostModelSchemaAdapter.modelToSchema(itemInDb.getItem())
+            );
     }
     delete(id: string): Promise<boolean> {
         throw new Error("Method not implemented.");

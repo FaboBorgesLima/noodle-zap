@@ -17,7 +17,6 @@ export const Home: FC = () => {
             const token = UserService.getToken();
             if (!token) return;
 
-            console.debug("getting posts in n", pageN);
             const newPosts = await PostService.getPage(pageN, 10, token);
             if (!newPosts) return;
 
@@ -28,8 +27,6 @@ export const Home: FC = () => {
         }
 
         getPosts();
-
-        console.debug(posts);
     }, [pageN]);
 
     return (

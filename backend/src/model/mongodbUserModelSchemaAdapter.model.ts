@@ -28,10 +28,7 @@ export class MongodbUserModelSchemaAdapter {
         userModel: ItemInDb<UserModel>
     ): ItemInDb<MongodbUserModel> {
         return new ItemInDb<MongodbUserModel>(
-            MongodbUserModel.factory(
-                userModel.getItem().getName(),
-                userModel.getItem().getEmail()
-            ),
+            MongodbUserModel.fromUser(userModel.getItem()),
             userModel.getId()
         );
     }
