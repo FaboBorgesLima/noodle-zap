@@ -53,7 +53,8 @@ export class PostStorage extends CommonStorage<PostModel> {
 
     async getPage(
         page: number = 0,
-        pageSize: number = 10
+        pageSize: number = 10,
+        sortByDate: boolean = true
     ): Promise<ItemInDb<PostModel>[] | void> {
         const items: ItemInDb<PostModel>[] = [];
 
@@ -61,6 +62,10 @@ export class PostStorage extends CommonStorage<PostModel> {
             .collection<PostSchema>(this.collectionName)
             .find()
             .skip(page * pageSize);
+
+        if (sortByDate) {
+            query.sort("dt", "desc");
+        }
 
         let item = await query.tryNext();
 

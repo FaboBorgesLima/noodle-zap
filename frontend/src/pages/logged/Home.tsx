@@ -30,8 +30,8 @@ export const Home: FC = () => {
     }, [pageN]);
 
     return (
-        <>
-            <div className="container mx-auto flex flex-col gap-4">
+        <div className="grow flex flex-col w-full">
+            <div className="container mx-auto flex flex-col gap-4 grow m-4">
                 <div className="flex flex-col gap-4">
                     {posts.map((page) =>
                         page.map((post) => (
@@ -62,6 +62,6 @@ export const Home: FC = () => {
                     </Link>
                 </div>
             </footer>
-        </>
+        </div>
     );
 };

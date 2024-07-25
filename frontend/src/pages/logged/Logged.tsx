@@ -34,7 +34,7 @@ export const Logged: FC = () => {
     return (
         <LoggedContext.Provider value={user}>
             <LoggedHeader></LoggedHeader>
-            <main>
+            <main className="flex flex-col grow">
                 <Outlet></Outlet>
             </main>
         </LoggedContext.Provider>
