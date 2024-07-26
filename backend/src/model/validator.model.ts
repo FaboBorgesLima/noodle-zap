@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 export class Validator {
     /**
      * @returns a email if it is valid
@@ -57,5 +59,13 @@ export class Validator {
         if (parsed < 0) return;
 
         return parsed;
+    }
+
+    static validateObjectIdHexString(hex: unknown): ObjectId | void {
+        if (typeof hex != "string") return;
+
+        try {
+            return ObjectId.createFromHexString(hex);
+        } catch {}
     }
 }

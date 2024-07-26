@@ -3,11 +3,14 @@ import { CommentSchema } from "../schema/comment.schema";
 import { CommentModel } from "./comment.model";
 import { ItemInDb } from "./itemInDb.model";
 import { MongodbUserModelSchemaAdapter } from "./mongodbUserModelSchemaAdapter.model";
+import { ItemInDbObjectId } from "./itemInDbObjectId.model";
 
 export class CommentModelSchemaAdapter {
-    static modelInDbToSchema(model: ItemInDb<CommentModel>): CommentSchema {
+    static modelInDbToSchema(
+        model: ItemInDb<CommentModel, ObjectId>
+    ): CommentSchema {
         return {
-            _id: ObjectId.createFromHexString(model.getId()),
+            _id: model.getRawId(),
             dt: model.getItem().getDate(),
             usr: MongodbUserModelSchemaAdapter.modelInDbToSchema(
                 model.getItem().getUser()
@@ -16,14 +19,16 @@ export class CommentModelSchemaAdapter {
         };
     }
 
-    static schemaInModelInDb(schema: CommentSchema): ItemInDb<CommentModel> {
-        return new ItemInDb<CommentModel>(
+    static schemaInModelInDb(
+        schema: CommentSchema
+    ): ItemInDb<CommentModel, ObjectId> {
+        return new ItemInDbObjectId<CommentModel>(
             CommentModel.loadFactory(
                 schema.text,
                 MongodbUserModelSchemaAdapter.schemaToModelInDb(schema.usr),
                 schema.dt
             ),
-            schema._id.toHexString()
+            schema._id
         );
     }
 }

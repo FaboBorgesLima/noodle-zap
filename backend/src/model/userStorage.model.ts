@@ -3,8 +3,9 @@ import { CommonStorage } from "./commonStorage.model";
 import { ItemInDb } from "./itemInDb.model";
 import { UserModel } from "./user.model";
 import { UserSchema } from "../schema/user.schema";
+import { ItemInDbNumber } from "./itemInDbNumber.model";
 
-export class UserStorage extends CommonStorage<UserModel> {
+export class UserStorage extends CommonStorage<UserModel, number> {
     constructor(private conn: Connection) {
         super();
     }
@@ -20,7 +21,7 @@ export class UserStorage extends CommonStorage<UserModel> {
                 ]
             );
             const id = insert[0].insertId;
-            return new ItemInDb(item, id.toString());
+            return new ItemInDbNumber(item, id);
         } catch {}
     }
     async update(
@@ -63,9 +64,9 @@ export class UserStorage extends CommonStorage<UserModel> {
 
             const userSchema = usersSchemas[0];
 
-            return new ItemInDb(
+            return new ItemInDbNumber(
                 this.schemaToModel(userSchema),
-                userSchema.user_id.toString()
+                userSchema.user_id
             );
         } catch {}
     }
@@ -78,10 +79,7 @@ export class UserStorage extends CommonStorage<UserModel> {
             if (usersSchemas.length != 1) return;
             const [user] = usersSchemas;
 
-            return new ItemInDb(
-                this.schemaToModel(user),
-                user.user_id.toString()
-            );
+            return new ItemInDbNumber(this.schemaToModel(user), user.user_id);
         } catch {}
     }
 
@@ -99,9 +97,9 @@ export class UserStorage extends CommonStorage<UserModel> {
 
             const userSchema = usersSchemas[0];
 
-            return new ItemInDb(
+            return new ItemInDbNumber(
                 this.schemaToModel(userSchema),
-                userSchema.user_id.toString()
+                userSchema.user_id
             );
         } catch {}
     }
@@ -117,9 +115,9 @@ export class UserStorage extends CommonStorage<UserModel> {
 
             const userSchema = usersSchemas[0];
 
-            return new ItemInDb(
+            return new ItemInDbNumber(
                 this.schemaToModel(userSchema),
-                userSchema.user_id.toString()
+                userSchema.user_id
             );
         } catch {}
     }

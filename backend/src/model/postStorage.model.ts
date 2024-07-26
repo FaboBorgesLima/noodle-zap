@@ -5,8 +5,9 @@ import { PostModel } from "./post.model";
 import { env } from "../config/env";
 import { PostSchema } from "../schema/post.schema";
 import { PostModelSchemaAdapter } from "./postModelSchemaAdapter.model";
+import { ItemInDbObjectId } from "./itemInDbObjectId.model";
 
-export class PostStorage extends CommonStorage<PostModel> {
+export class PostStorage extends CommonStorage<PostModel, ObjectId> {
     protected readonly collectionName = "posts";
     protected db: Db;
     constructor(protected mongoClient: MongoClient) {
@@ -20,7 +21,7 @@ export class PostStorage extends CommonStorage<PostModel> {
                 .collection<PostSchema>(this.collectionName)
                 .insertOne(PostModelSchemaAdapter.modelToSchema(item));
 
-            return new ItemInDb(item, insert.insertedId.toHexString());
+            return new ItemInDbObjectId(item, insert.insertedId);
         } catch (e) {
             console.debug(e);
         }
@@ -38,16 +39,16 @@ export class PostStorage extends CommonStorage<PostModel> {
     delete(id: string): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-    async getById(id: string): Promise<ItemInDb<PostModel> | void> {
+    async getById(id: string): Promise<ItemInDb<PostModel, ObjectId> | void> {
         const item = await this.db
             .collection<PostSchema>(this.collectionName)
             .findOne({ _id: ObjectId.createFromHexString(id) });
 
         if (!item) return;
 
-        return new ItemInDb<PostModel>(
+        return new ItemInDbObjectId<PostModel>(
             PostModelSchemaAdapter.schemaToModel(item),
-            item._id.toHexString()
+            item._id
         );
     }
 
@@ -71,9 +72,9 @@ export class PostStorage extends CommonStorage<PostModel> {
 
         for (let i = 0; i < pageSize && item; i++) {
             items.push(
-                new ItemInDb(
+                new ItemInDbObjectId(
                     PostModelSchemaAdapter.schemaToModel(item),
-                    item._id.toHexString()
+                    item._id
                 )
             );
 

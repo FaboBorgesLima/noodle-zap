@@ -1,22 +1,20 @@
-import { ObjectId } from "mongodb";
+import { Int32, ObjectId } from "mongodb";
 import { HasJSON } from "./hasJson.interface";
 
-export class ItemInDb<T extends HasJSON> {
-    constructor(protected item: T, protected id: string) {}
+export abstract class ItemInDb<T extends HasJSON, Id = any> {
+    constructor(protected item: T, protected id: Id) {}
 
     getItem(): T {
         return this.item;
     }
 
-    getId(): string {
+    getRawId(): Id {
         return this.id;
     }
 
-    static fromObjectId<T extends HasJSON>(item: T, id: ObjectId): ItemInDb<T> {
-        return new ItemInDb(item, id.toHexString());
-    }
+    abstract getId(): string;
 
     toJSON(): object {
-        return { id: this.id, ...this.item.toJSON() };
+        return { id: this.getId(), ...this.item.toJSON() };
     }
 }
