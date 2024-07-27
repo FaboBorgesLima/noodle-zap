@@ -4,6 +4,7 @@ import { ItemInDb } from "../model/itemInDb.model";
 import { MongodbUserModelSchemaAdapter } from "../model/mongodbUserModelSchemaAdapter.model";
 import { Int32 } from "mongodb";
 import { MongodbUserSchema } from "../schema/mongodbUser.schema";
+import { ItemInDbInt32 } from "../model/itemInDbInt32.model";
 
 describe("mongodb user model schema adapter", () => {
     test("model in db to schema", () => {
@@ -11,9 +12,9 @@ describe("mongodb user model schema adapter", () => {
         const userName = "name";
         const userId = "123";
 
-        const model = new ItemInDb(
+        const model = new ItemInDbInt32(
             MongodbUserModel.factory(userName, userEmail),
-            userId
+            new Int32(0)
         );
 
         const schema = MongodbUserModelSchemaAdapter.modelInDbToSchema(model);

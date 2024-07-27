@@ -5,15 +5,17 @@ import { MongodbUserModel } from "../model/mongodbUser.model";
 import { CommentModelSchemaAdapter } from "../model/commentModelSchemaAdapter.model";
 import { CommentSchema } from "../schema/comment.schema";
 import { Int32, ObjectId } from "mongodb";
+import { ItemInDbObjectId } from "../model/itemInDbObjectId.model";
+import { ItemInDbInt32 } from "../model/itemInDbInt32.model";
 
 describe("comment user model schema adapter", () => {
     test("model in db to schema", () => {
-        const model = ItemInDb.fromObjectId(
+        const model = new ItemInDbObjectId(
             CommentModel.loadFactory(
                 "text",
-                new ItemInDb(
+                new ItemInDbInt32(
                     MongodbUserModel.factory("name", "email@email.com"),
-                    "0"
+                    new Int32(0)
                 ),
                 new Date()
             ),

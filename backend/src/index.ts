@@ -1,5 +1,3 @@
-import { env } from "process";
-import { connPoll } from "./connection/mysql";
 import express from "express";
 import { apiRoutes } from "./routes/api.routes";
 import cors from "cors";

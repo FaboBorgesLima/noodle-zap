@@ -7,14 +7,16 @@ import { CommentModel } from "../model/comment.model";
 import { LikeModel } from "../model/likeModel.model";
 import { Int32, ObjectId } from "mongodb";
 import { PostSchema } from "../schema/post.schema";
+import { ItemInDbInt32 } from "../model/itemInDbInt32.model";
+import { ItemInDbObjectId } from "../model/itemInDbObjectId.model";
 
 describe("post model schema adapter", () => {
     test("model to schema", () => {
         const text = "text";
         const title = "title";
-        const user = new ItemInDb(
+        const user = new ItemInDbInt32(
             MongodbUserModel.factory("user", "email@email.com"),
-            "123"
+            new Int32(123)
         );
 
         const model = PostModel.load(
@@ -23,9 +25,9 @@ describe("post model schema adapter", () => {
             title,
             new Date(),
             [
-                new ItemInDb(
+                new ItemInDbObjectId(
                     CommentModel.loadFactory("comment", user, new Date()),
-                    new ObjectId().toHexString()
+                    new ObjectId()
                 ),
             ],
             [LikeModel.load(user, new Date())]

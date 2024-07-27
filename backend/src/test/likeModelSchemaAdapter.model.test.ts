@@ -3,6 +3,8 @@ import { LikeModel } from "../model/likeModel.model";
 import { MongodbUserModel } from "../model/mongodbUser.model";
 import { ItemInDb } from "../model/itemInDb.model";
 import { LikeModelSchemaAdapter } from "../model/likeModelSchemaAdapter.model";
+import { ItemInDbInt32 } from "../model/itemInDbInt32.model";
+import { Int32 } from "mongodb";
 
 describe("like model schema adapter", () => {
     test("date is the same", () => {
@@ -11,7 +13,10 @@ describe("like model schema adapter", () => {
         const userId = "123";
 
         const model = LikeModel.load(
-            new ItemInDb(MongodbUserModel.factory(userName, userEmail), userId),
+            new ItemInDbInt32(
+                MongodbUserModel.factory(userName, userEmail),
+                new Int32(0)
+            ),
             new Date()
         );
 
