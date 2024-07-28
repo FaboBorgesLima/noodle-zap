@@ -1,4 +1,4 @@
-import { describe, expect, it, test } from "@jest/globals";
+import { describe, expect, test } from "@jest/globals";
 import { HashMaker } from "../model/hashMaker.model";
 
 describe("hash maker", () => {

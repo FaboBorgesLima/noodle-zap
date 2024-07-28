@@ -1,4 +1,4 @@
-import { Hmac, createHash, createHmac } from "crypto";
+import { Hmac, createHmac } from "crypto";
 import { env } from "../config/env";
 
 export class HashMaker {

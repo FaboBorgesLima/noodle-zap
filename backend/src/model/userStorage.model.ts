@@ -9,7 +9,7 @@ export class UserStorage extends CommonStorage<UserModel, number> {
     constructor(private conn: Connection) {
         super();
     }
-    async create(item: UserModel): Promise<void | ItemInDb<UserModel>> {
+    async create(item: UserModel): Promise<void | ItemInDb<UserModel, number>> {
         try {
             const insert = await this.conn.query<ResultSetHeader>(
                 "INSERT INTO user (email,user_name,user_password,token) VALUES (?,?,?,?)",
@@ -26,7 +26,7 @@ export class UserStorage extends CommonStorage<UserModel, number> {
     }
     async update(
         itemInDb: ItemInDb<UserModel>
-    ): Promise<void | ItemInDb<UserModel>> {
+    ): Promise<void | ItemInDb<UserModel, number>> {
         try {
             const schema = this.modelToSchema(itemInDb);
             const update = await this.conn.query<ResultSetHeader>(
@@ -53,7 +53,7 @@ export class UserStorage extends CommonStorage<UserModel, number> {
             return false;
         }
     }
-    async getById(id: string): Promise<void | ItemInDb<UserModel>> {
+    async getById(id: string): Promise<void | ItemInDb<UserModel, number>> {
         try {
             const [usersSchemas] = await this.conn.query<UserSchema[]>(
                 "SELECT * FROM user WHERE user_id = ?",
@@ -70,7 +70,7 @@ export class UserStorage extends CommonStorage<UserModel, number> {
             );
         } catch {}
     }
-    async getByName(name: string): Promise<void | ItemInDb<UserModel>> {
+    async getByName(name: string): Promise<void | ItemInDb<UserModel, number>> {
         try {
             const [usersSchemas] = await this.conn.query<UserSchema[]>(
                 "SELECT * FROM user WHERE user_name = ? LIMIT 1",
@@ -86,7 +86,7 @@ export class UserStorage extends CommonStorage<UserModel, number> {
     async getByEmailPassword(
         email: string,
         hashPassword: string
-    ): Promise<void | ItemInDb<UserModel>> {
+    ): Promise<void | ItemInDb<UserModel, number>> {
         try {
             const [usersSchemas] = await this.conn.query<UserSchema[]>(
                 "SELECT * FROM user WHERE email = ? AND user_password = ?",
@@ -104,7 +104,9 @@ export class UserStorage extends CommonStorage<UserModel, number> {
         } catch {}
     }
 
-    async getByToken(token: string): Promise<void | ItemInDb<UserModel>> {
+    async getByToken(
+        token: string
+    ): Promise<void | ItemInDb<UserModel, number>> {
         try {
             const [usersSchemas] = await this.conn.query<UserSchema[]>(
                 "SELECT * FROM user WHERE token = ?",

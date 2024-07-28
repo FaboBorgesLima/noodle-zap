@@ -1,3 +1,4 @@
+import { Int32, ObjectId } from "mongodb";
 import { CommentModel } from "./comment.model";
 import { HasJSON } from "./hasJson.interface";
 import { ItemInDb } from "./itemInDb.model";
@@ -5,16 +6,16 @@ import { LikeModel } from "./likeModel.model";
 import { MongodbUserModel } from "./mongodbUser.model";
 
 export class PostModel implements HasJSON {
-    private comments: ItemInDb<CommentModel>[] = [];
+    private comments: ItemInDb<CommentModel, ObjectId>[] = [];
     private likes: LikeModel[] = [];
     private title: string;
     private text: string;
-    private user: ItemInDb<MongodbUserModel>;
+    private user: ItemInDb<MongodbUserModel, Int32>;
     private date: Date;
 
     private constructor(
         text: string,
-        user: ItemInDb<MongodbUserModel>,
+        user: ItemInDb<MongodbUserModel, Int32>,
         title: string,
         date: Date
     ) {
@@ -26,10 +27,10 @@ export class PostModel implements HasJSON {
 
     static load(
         text: string,
-        user: ItemInDb<MongodbUserModel>,
+        user: ItemInDb<MongodbUserModel, Int32>,
         title: string,
         date: Date,
-        comments: ItemInDb<CommentModel>[],
+        comments: ItemInDb<CommentModel, ObjectId>[],
         likes: LikeModel[]
     ): PostModel {
         const post = new PostModel(text, user, title, date);
@@ -41,7 +42,7 @@ export class PostModel implements HasJSON {
 
     static create(
         text: string,
-        user: ItemInDb<MongodbUserModel>,
+        user: ItemInDb<MongodbUserModel, Int32>,
         title: string
     ): PostModel {
         return new PostModel(text, user, title, new Date());

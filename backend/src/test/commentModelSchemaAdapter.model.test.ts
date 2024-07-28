@@ -1,5 +1,4 @@
 import { describe, expect, test } from "@jest/globals";
-import { ItemInDb } from "../model/itemInDb.model";
 import { CommentModel } from "../model/comment.model";
 import { MongodbUserModel } from "../model/mongodbUser.model";
 import { CommentModelSchemaAdapter } from "../model/commentModelSchemaAdapter.model";

@@ -1,10 +1,7 @@
-import { afterAll, beforeAll, describe, expect, it, test } from "@jest/globals";
-import { beforeEach } from "node:test";
+import { afterAll, describe, expect, test } from "@jest/globals";
 import { connPoll } from "../connection/mysql";
-import { Connection } from "mysql2/promise";
 import { UserStorage } from "../model/userStorage.model";
 import { UserModel } from "../model/user.model";
-import { HashMaker } from "../model/hashMaker.model";
 import { env } from "../config/env";
 
 describe("user storage", () => {

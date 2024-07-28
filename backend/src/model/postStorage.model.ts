@@ -15,7 +15,9 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
         this.db = this.mongoClient.db(env.MONGO_INITDB_DATABASE);
     }
 
-    async create(item: PostModel): Promise<ItemInDb<PostModel> | void> {
+    async create(
+        item: PostModel
+    ): Promise<ItemInDb<PostModel, ObjectId> | void> {
         try {
             const insert = await this.db
                 .collection<PostSchema>(this.collectionName)
@@ -28,7 +30,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
     }
     async update(
         itemInDb: ItemInDb<PostModel>
-    ): Promise<ItemInDb<PostModel> | void> {
+    ): Promise<ItemInDb<PostModel, ObjectId> | void> {
         this.db
             .collection<PostSchema>(this.collectionName)
             .updateOne(

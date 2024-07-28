@@ -1,4 +1,3 @@
-import { Int32 } from "mongodb";
 import { Validator } from "./validator.model";
 import { MongodbUserModel } from "./mongodbUser.model";
 import { ItemInDb } from "./itemInDb.model";

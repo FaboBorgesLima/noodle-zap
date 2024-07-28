@@ -1,6 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
 import { MongodbUserModel } from "../model/mongodbUser.model";
-import { ItemInDb } from "../model/itemInDb.model";
 import { MongodbUserModelSchemaAdapter } from "../model/mongodbUserModelSchemaAdapter.model";
 import { Int32 } from "mongodb";
 import { MongodbUserSchema } from "../schema/mongodbUser.schema";
