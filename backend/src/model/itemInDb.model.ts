@@ -1,4 +1,3 @@
-import { Int32, ObjectId } from "mongodb";
 import { HasJSON } from "./hasJson.interface";
 
 export abstract class ItemInDb<T extends HasJSON, Id extends any = unknown> {

@@ -41,23 +41,22 @@ export class UserStorage extends CommonStorage<UserModel, number> {
             );
         } catch {}
     }
-    async delete(id: string): Promise<boolean> {
+    async delete(id: number): Promise<boolean> {
         try {
             const del = await this.conn.query<ResultSetHeader>(
                 "DELETE FROM user WHERE user_id=?",
-                [parseInt(id)]
+                [id]
             );
 
             return Boolean(del[0].affectedRows);
-        } catch {
-            return false;
-        }
+        } catch {}
+        return false;
     }
-    async getById(id: string): Promise<void | ItemInDb<UserModel, number>> {
+    async getById(id: number): Promise<void | ItemInDb<UserModel, number>> {
         try {
             const [usersSchemas] = await this.conn.query<UserSchema[]>(
                 "SELECT * FROM user WHERE user_id = ?",
-                [parseInt(id)]
+                [id]
             );
 
             if (usersSchemas.length == 0) return;

@@ -4,9 +4,10 @@ import { HasJSON } from "./hasJson.interface";
 import { ItemInDb } from "./itemInDb.model";
 import { LikeModel } from "./likeModel.model";
 import { MongodbUserModel } from "./mongodbUser.model";
+import { CommentIndb } from "./commentInDb.model";
 
 export class PostModel implements HasJSON {
-    private comments: ItemInDb<CommentModel, ObjectId>[] = [];
+    private comments: CommentIndb[] = [];
     private likes: LikeModel[] = [];
     private title: string;
     private text: string;

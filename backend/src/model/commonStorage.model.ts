@@ -6,7 +6,7 @@ export abstract class CommonStorage<T extends HasJSON, Id> {
 
     abstract update(itemInDb: ItemInDb<T, Id>): Promise<ItemInDb<T, Id> | void>;
 
-    abstract delete(id: string): Promise<boolean>;
+    abstract delete(id: Id): Promise<boolean>;
 
-    abstract getById(id: string): Promise<ItemInDb<T, Id> | void>;
+    abstract getById(id: Id): Promise<ItemInDb<T, Id> | void>;
 }

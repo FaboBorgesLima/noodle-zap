@@ -1,6 +1,4 @@
-import { ObjectId, Timestamp } from "mongodb";
 import { PostSchema } from "../schema/post.schema";
-import { ItemInDb } from "./itemInDb.model";
 import { PostModel } from "./post.model";
 import { CommentModelSchemaAdapter } from "./commentModelSchemaAdapter.model";
 import { MongodbUserModelSchemaAdapter } from "./mongodbUserModelSchemaAdapter.model";

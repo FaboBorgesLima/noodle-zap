@@ -31,27 +31,38 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
     async update(
         itemInDb: ItemInDb<PostModel>
     ): Promise<ItemInDb<PostModel, ObjectId> | void> {
-        this.db
-            .collection<PostSchema>(this.collectionName)
-            .updateOne(
-                { _id: ObjectId.createFromHexString(itemInDb.getId()) },
-                PostModelSchemaAdapter.modelToSchema(itemInDb.getItem())
+        try {
+            this.db
+                .collection<PostSchema>(this.collectionName)
+                .updateOne(
+                    { _id: ObjectId.createFromHexString(itemInDb.getId()) },
+                    PostModelSchemaAdapter.modelToSchema(itemInDb.getItem())
+                );
+        } catch {}
+    }
+    async delete(id: ObjectId): Promise<boolean> {
+        try {
+            const res = await this.db
+                .collection<PostSchema>(this.collectionName)
+                .deleteOne({ _id: id });
+
+            return res.acknowledged;
+        } catch {}
+        return false;
+    }
+    async getById(id: ObjectId): Promise<ItemInDb<PostModel, ObjectId> | void> {
+        try {
+            const item = await this.db
+                .collection<PostSchema>(this.collectionName)
+                .findOne({ _id: id });
+
+            if (!item) return;
+
+            return new ItemInDbObjectId<PostModel>(
+                PostModelSchemaAdapter.schemaToModel(item),
+                item._id
             );
-    }
-    delete(id: string): Promise<boolean> {
-        throw new Error("Method not implemented.");
-    }
-    async getById(id: string): Promise<ItemInDb<PostModel, ObjectId> | void> {
-        const item = await this.db
-            .collection<PostSchema>(this.collectionName)
-            .findOne({ _id: ObjectId.createFromHexString(id) });
-
-        if (!item) return;
-
-        return new ItemInDbObjectId<PostModel>(
-            PostModelSchemaAdapter.schemaToModel(item),
-            item._id
-        );
+        } catch {}
     }
 
     async getPage(
@@ -59,30 +70,32 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
         pageSize: number = 10,
         sortByDate: boolean = true
     ): Promise<ItemInDb<PostModel>[] | void> {
-        const items: ItemInDb<PostModel>[] = [];
+        try {
+            const items: ItemInDb<PostModel>[] = [];
 
-        const query = this.db
-            .collection<PostSchema>(this.collectionName)
-            .find()
-            .skip(page * pageSize);
+            const query = this.db
+                .collection<PostSchema>(this.collectionName)
+                .find()
+                .skip(page * pageSize);
 
-        if (sortByDate) {
-            query.sort("dt", "desc");
-        }
+            if (sortByDate) {
+                query.sort("dt", "desc");
+            }
 
-        let item = await query.tryNext();
+            let item = await query.tryNext();
 
-        for (let i = 0; i < pageSize && item; i++) {
-            items.push(
-                new ItemInDbObjectId(
-                    PostModelSchemaAdapter.schemaToModel(item),
-                    item._id
-                )
-            );
+            for (let i = 0; i < pageSize && item; i++) {
+                items.push(
+                    new ItemInDbObjectId(
+                        PostModelSchemaAdapter.schemaToModel(item),
+                        item._id
+                    )
+                );
 
-            item = await query.tryNext();
-        }
+                item = await query.tryNext();
+            }
 
-        return items;
+            return items;
+        } catch {}
     }
 }
