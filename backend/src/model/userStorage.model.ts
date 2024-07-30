@@ -25,7 +25,7 @@ export class UserStorage extends CommonStorage<UserModel, number> {
         } catch {}
     }
     async update(
-        itemInDb: ItemInDb<UserModel>
+        itemInDb: ItemInDb<UserModel, number>
     ): Promise<void | ItemInDb<UserModel, number>> {
         try {
             const schema = this.modelToSchema(itemInDb);
@@ -39,6 +39,8 @@ export class UserStorage extends CommonStorage<UserModel, number> {
                     schema.user_id,
                 ]
             );
+
+            return itemInDb;
         } catch {}
     }
     async delete(id: number): Promise<boolean> {

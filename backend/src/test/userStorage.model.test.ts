@@ -40,7 +40,7 @@ describe("user storage", () => {
 
         // read
 
-        const userRead = await storage.getById(user.getId());
+        const userRead = await storage.getById(user.getRawId());
 
         expect(userRead).toBeTruthy();
 
@@ -60,9 +60,9 @@ describe("user storage", () => {
 
         // delete
 
-        await storage.delete(userRead.getId());
+        await storage.delete(userRead.getRawId());
 
-        const userReadDeleted = await storage.getById(user.getId());
+        const userReadDeleted = await storage.getById(user.getRawId());
 
         expect(userReadDeleted).toBeFalsy();
 
@@ -80,7 +80,7 @@ describe("user storage", () => {
 
         const storage = new UserStorage(conn);
 
-        const result = await storage.delete("999999");
+        const result = await storage.delete(999999);
 
         expect(result).toBeFalsy();
 

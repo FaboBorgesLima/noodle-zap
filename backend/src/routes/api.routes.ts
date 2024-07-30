@@ -62,7 +62,7 @@ userRoutes.delete("/auth/logout", async (req, res) => {
 
     await userController.logout(
         req,
-        <Response<any, { user: ItemInDb<UserModel> }>>res
+        <Response<any, { user: ItemInDb<UserModel, number> }>>res
     );
     conn.release();
 });

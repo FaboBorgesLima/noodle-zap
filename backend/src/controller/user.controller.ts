@@ -122,7 +122,7 @@ export class UserController {
 
     async logout(
         req: Request,
-        res: Response<any, { user: ItemInDb<UserModel> }>
+        res: Response<any, { user: ItemInDb<UserModel, number> }>
     ) {
         const { user } = res.locals;
 
