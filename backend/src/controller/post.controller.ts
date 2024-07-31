@@ -27,7 +27,7 @@ export class PostController {
         }
 
         const item = await this.storage.create(
-            PostModel.create(
+            PostModel.factory(
                 validated.text,
                 MongodbUserModelSchemaAdapter.userModelInDbToMongodbUserModel(
                     res.locals.user

@@ -12,11 +12,6 @@ import { mongoClient } from "../connection/mongo";
 const apiRoutes = express.Router();
 
 apiRoutes.use(express.json());
-apiRoutes.use((req, res, next) => {
-    console.log(`${req.method} ${req.path}`);
-    next();
-});
-
 // ----------------------------------------- user routes
 
 const userRoutes = express.Router();

@@ -8,6 +8,11 @@ async function main() {
 
     app.use(cors({}));
 
+    app.use((req, _res, next) => {
+        console.log(`${req.method}:${req.path}`);
+        next();
+    });
+
     app.use("/api", apiRoutes);
 
     app.listen(port, () => {

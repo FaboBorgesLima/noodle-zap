@@ -26,27 +26,40 @@ export class PostModel implements HasJSON {
         this.date = date;
     }
 
-    static load(
+    static factory(
         text: string,
         user: ItemInDb<MongodbUserModel, Int32>,
         title: string,
         date: Date,
         comments: ItemInDb<CommentModel, ObjectId>[],
         likes: LikeModel[]
+    ): PostModel;
+    static factory(
+        text: string,
+        user: ItemInDb<MongodbUserModel, Int32>,
+        title: string
+    ): PostModel;
+    static factory(
+        text: string,
+        user: ItemInDb<MongodbUserModel, Int32>,
+        title: string,
+        date?: Date,
+        comments?: ItemInDb<CommentModel, ObjectId>[],
+        likes?: LikeModel[]
     ): PostModel {
+        if (
+            likes === undefined ||
+            comments === undefined ||
+            date === undefined
+        ) {
+            return new PostModel(text, user, title, new Date());
+        }
+
         const post = new PostModel(text, user, title, date);
 
         post.comments = comments;
         post.likes = likes;
         return post;
-    }
-
-    static create(
-        text: string,
-        user: ItemInDb<MongodbUserModel, Int32>,
-        title: string
-    ): PostModel {
-        return new PostModel(text, user, title, new Date());
     }
 
     getUser() {
@@ -77,10 +90,7 @@ export class PostModel implements HasJSON {
         return {
             text: this.text,
             title: this.title,
-            comments: this.comments.map((comment) => ({
-                ...comment.getItem().toJSON(),
-                id: comment.getId(),
-            })),
+            comments: this.comments.map((comment) => comment.toJSON()),
             likes: this.likes.map((like) => like.toJSON()),
             date: this.date.getTime(),
             user: { ...this.user.getItem().toJSON(), id: this.user.getId() },

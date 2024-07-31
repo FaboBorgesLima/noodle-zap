@@ -25,7 +25,7 @@ export class PostModelSchemaAdapter {
     }
 
     static schemaToModel(schema: PostSchema): PostModel {
-        return PostModel.load(
+        return PostModel.factory(
             schema.text,
             MongodbUserModelSchemaAdapter.schemaToModelInDb(schema.usr),
             schema.title,
