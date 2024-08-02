@@ -5,7 +5,6 @@ import { UserService } from "../../services/userService";
 
 export const CreatePost: FC<{}> = ({}) => {
     const [title, setTitle] = useState("");
-
     const [text, setText] = useState("");
     const navigate = useNavigate();
 
@@ -32,9 +31,8 @@ export const CreatePost: FC<{}> = ({}) => {
                     const token = UserService.getToken();
 
                     if (!token) return;
-                    console.log(await PostService.create(title, text, token));
-
-                    navigate("/logged");
+                    if (await PostService.create(title, text, token))
+                        navigate("/logged");
                 }}
             >
                 <label htmlFor="" className="form-label text-center">
