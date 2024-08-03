@@ -1,4 +1,4 @@
-import { Connection, ResultSetHeader } from "mysql2/promise";
+import { Connection, PoolConnection, ResultSetHeader } from "mysql2/promise";
 import { CommonStorage } from "./commonStorage.model";
 import { ItemInDb } from "./itemInDb.model";
 import { UserModel } from "./user.model";
@@ -6,7 +6,7 @@ import { UserSchema } from "../schema/user.schema";
 import { ItemInDbNumber } from "./itemInDbNumber.model";
 
 export class UserStorage extends CommonStorage<UserModel, number> {
-    constructor(private conn: Connection) {
+    constructor(private conn: PoolConnection) {
         super();
     }
     async create(item: UserModel): Promise<void | ItemInDb<UserModel, number>> {

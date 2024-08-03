@@ -6,11 +6,14 @@ import { JsonValidator } from "../model/jsonValidator.model";
 import { Validator } from "../model/validator.model";
 import { PostModel } from "../model/post.model";
 import { MongodbUserModelSchemaAdapter } from "../model/mongodbUserModelSchemaAdapter.model";
+import { mongoClient } from "../connection/mongo";
 
 export class PostController {
-    constructor(private storage: PostStorage) {}
+    constructor() {}
 
-    async create(
+    private static storage = new PostStorage(mongoClient);
+
+    static async create(
         req: Request,
         res: Response<any, { user: ItemInDb<UserModel> }>
     ) {
@@ -44,7 +47,7 @@ export class PostController {
         res.json(item.toJSON());
     }
 
-    async getPage(
+    static async getPage(
         req: Request,
         res: Response<any, { user: ItemInDb<UserModel> }>
     ) {

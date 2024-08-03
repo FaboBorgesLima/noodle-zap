@@ -1,13 +1,9 @@
-import express, { Response } from "express";
+import express from "express";
 import { UserController } from "../controller/user.controller";
 import { connPoll } from "../connection/mysql";
 import { UserStorage } from "../model/userStorage.model";
 import { Auth } from "../middleware/auth.middleware";
-import { ItemInDb } from "../model/itemInDb.model";
-import { UserModel } from "../model/user.model";
 import { PostController } from "../controller/post.controller";
-import { PostStorage } from "../model/postStorage.model";
-import { mongoClient } from "../connection/mongo";
 
 const apiRoutes = express.Router();
 
@@ -16,32 +12,14 @@ apiRoutes.use(express.json());
 
 const userRoutes = express.Router();
 
-userRoutes.post("/create", async (req, res) => {
-    const conn = await connPoll.getConnection();
-    const userStorage = new UserStorage(conn);
-    const userController = new UserController(userStorage);
+userRoutes.post("/create", UserController.create.bind(UserController));
 
-    await userController.create(req, res);
-    conn.release();
-});
+userRoutes.post("/login", UserController.login.bind(UserController));
 
-userRoutes.post("/login", async (req, res) => {
-    const conn = await connPoll.getConnection();
-    const userStorage = new UserStorage(conn);
-    const userController = new UserController(userStorage);
-
-    await userController.login(req, res);
-    conn.release();
-});
-
-userRoutes.post("/login-token", async (req, res) => {
-    const conn = await connPoll.getConnection();
-    const userStorage = new UserStorage(conn);
-    const userController = new UserController(userStorage);
-
-    await userController.loginViaToken(req, res);
-    conn.release();
-});
+userRoutes.post(
+    "/login-token",
+    UserController.loginViaToken.bind(UserController)
+);
 
 userRoutes.use("/auth", async (req, res, next) => {
     const conn = await connPoll.getConnection();
@@ -50,26 +28,12 @@ userRoutes.use("/auth", async (req, res, next) => {
     conn.release();
 });
 
-userRoutes.delete("/auth/logout", async (req, res) => {
-    const conn = await connPoll.getConnection();
-    const userStorage = new UserStorage(conn);
-    const userController = new UserController(userStorage);
+userRoutes.delete("/auth/logout", UserController.logout);
 
-    await userController.logout(
-        req,
-        <Response<any, { user: ItemInDb<UserModel, number> }>>res
-    );
-    conn.release();
-});
-
-userRoutes.get("/find-by-name/:name", async (req, res) => {
-    const conn = await connPoll.getConnection();
-    const userStorage = new UserStorage(conn);
-    const userController = new UserController(userStorage);
-
-    await userController.findByName(req, res);
-    conn.release();
-});
+userRoutes.get(
+    "/find-by-name/:name",
+    UserController.findByName.bind(UserController)
+);
 
 apiRoutes.use("/user", userRoutes);
 
@@ -84,23 +48,9 @@ postRoutes.use("/auth", async (req, res, next) => {
     conn.release();
 });
 
-postRoutes.post("/auth/create", async (req, res, next) => {
-    const postController = new PostController(new PostStorage(mongoClient));
+postRoutes.post("/auth/create", PostController.create.bind(PostController));
 
-    postController.create(
-        req,
-        <Response<any, { user: ItemInDb<UserModel> }>>res
-    );
-});
-
-postRoutes.get("/auth/page", async (req, res, next) => {
-    const postController = new PostController(new PostStorage(mongoClient));
-
-    postController.getPage(
-        req,
-        <Response<any, { user: ItemInDb<UserModel> }>>res
-    );
-});
+postRoutes.get("/auth/page", PostController.getPage.bind(PostController));
 
 apiRoutes.use("/post", postRoutes);
 

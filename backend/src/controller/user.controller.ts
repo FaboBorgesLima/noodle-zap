@@ -5,11 +5,16 @@ import { Validator } from "../model/validator.model";
 import { UserModel } from "../model/user.model";
 import { HashMaker } from "../model/hashMaker.model";
 import { ItemInDb } from "../model/itemInDb.model";
+import { connPoll } from "../connection/mysql";
 
 export class UserController {
-    constructor(private userStorage: UserStorage) {}
+    private static conn = connPoll.getConnection();
 
-    async create(req: Request, res: Response) {
+    private static async getUserStorage(): Promise<UserStorage> {
+        return new UserStorage(await this.conn);
+    }
+
+    static async create(req: Request, res: Response) {
         const validator = new JsonValidator({
             email: Validator.validateEmail,
             password: Validator.validatePassword,
@@ -34,7 +39,7 @@ export class UserController {
             return;
         }
 
-        const userInDb = await this.userStorage.create(user);
+        const userInDb = await (await this.getUserStorage()).create(user);
 
         if (!userInDb) {
             res.sendStatus(400);
@@ -44,7 +49,7 @@ export class UserController {
         res.json({ user: userInDb.getItem().toJSON(), id: userInDb.getId() });
     }
 
-    async login(req: Request, res: Response) {
+    static async login(req: Request, res: Response) {
         const validator = new JsonValidator({
             email: Validator.validateEmail,
             password: Validator.validatePassword,
@@ -58,7 +63,9 @@ export class UserController {
             return;
         }
 
-        const userInDb = await this.userStorage.getByEmailPassword(
+        const userInDb = await (
+            await this.getUserStorage()
+        ).getByEmailPassword(
             validated.email,
             HashMaker.make(validated.password)
         );
@@ -75,7 +82,7 @@ export class UserController {
         });
     }
 
-    async findByName(req: Request, res: Response) {
+    static async findByName(req: Request, res: Response) {
         const validator = new JsonValidator({ name: Validator.validateName });
 
         const validated = validator.validate(req.params);
@@ -85,7 +92,9 @@ export class UserController {
             return;
         }
 
-        const user = await this.userStorage.getByName(validated.name);
+        const user = await (
+            await this.getUserStorage()
+        ).getByName(validated.name);
 
         if (!user) {
             res.sendStatus(404);
@@ -95,7 +104,7 @@ export class UserController {
         res.json({ id: user.getId(), name: user.getItem().getName() });
     }
 
-    async loginViaToken(req: Request, res: Response) {
+    static async loginViaToken(req: Request, res: Response) {
         const validator = new JsonValidator({
             token: Validator.validateStringLength(44),
         });
@@ -107,7 +116,9 @@ export class UserController {
             return;
         }
 
-        const userInDb = await this.userStorage.getByToken(validated.token);
+        const userInDb = await (
+            await this.getUserStorage()
+        ).getByToken(validated.token);
 
         if (!userInDb) {
             res.sendStatus(400);
@@ -120,7 +131,7 @@ export class UserController {
         });
     }
 
-    async logout(
+    static async logout(
         req: Request,
         res: Response<any, { user: ItemInDb<UserModel, number> }>
     ) {
@@ -128,7 +139,7 @@ export class UserController {
 
         user.getItem().randomizeToken();
 
-        const newUser = await this.userStorage.update(user);
+        const newUser = await (await this.getUserStorage()).update(user);
 
         if (newUser) {
             res.sendStatus(200);
