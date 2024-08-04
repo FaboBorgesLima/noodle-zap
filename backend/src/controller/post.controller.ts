@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { PostStorage } from "../model/postStorage.model";
+import { PostStorage } from "../model/storage/postStorage.model";
 import { UserModel } from "../model/user.model";
 import { ItemInDb } from "../model/itemInDb.model";
-import { JsonValidator } from "../model/jsonValidator.model";
-import { Validator } from "../model/validator.model";
+import { JsonValidator } from "../model/helpers/jsonValidator.model";
+import { Validator } from "../model/helpers/validator.model";
 import { PostModel } from "../model/post.model";
 import { MongodbUserModelSchemaAdapter } from "../model/mongodbUserModelSchemaAdapter.model";
 import { mongoClient } from "../connection/mongo";

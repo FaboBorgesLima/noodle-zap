@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { UserStorage } from "../model/userStorage.model";
-import { JsonValidator } from "../model/jsonValidator.model";
-import { Validator } from "../model/validator.model";
+import { UserStorage } from "../model/storage/userStorage.model";
+import { JsonValidator } from "../model/helpers/jsonValidator.model";
+import { Validator } from "../model/helpers/validator.model";
 import { UserModel } from "../model/user.model";
-import { HashMaker } from "../model/hashMaker.model";
+import { HashMaker } from "../model/helpers/hashMaker.model";
 import { ItemInDb } from "../model/itemInDb.model";
 import { connPoll } from "../connection/mysql";
 

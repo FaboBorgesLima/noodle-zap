@@ -1,7 +1,7 @@
 import express from "express";
 import { UserController } from "../controller/user.controller";
 import { connPoll } from "../connection/mysql";
-import { UserStorage } from "../model/userStorage.model";
+import { UserStorage } from "../model/storage/userStorage.model";
 import { Auth } from "../middleware/auth.middleware";
 import { PostController } from "../controller/post.controller";
 

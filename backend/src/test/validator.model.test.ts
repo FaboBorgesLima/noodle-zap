@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import { Validator } from "../model/validator.model";
+import { Validator } from "../model/helpers/validator.model";
 
 describe("validator", () => {
     test("email", () => {

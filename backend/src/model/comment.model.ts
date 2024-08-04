@@ -1,4 +1,4 @@
-import { Validator } from "./validator.model";
+import { Validator } from "./helpers/validator.model";
 import { MongodbUserModel } from "./mongodbUser.model";
 import { ItemInDb } from "./itemInDb.model";
 import { HasJSON } from "./hasJson.interface";

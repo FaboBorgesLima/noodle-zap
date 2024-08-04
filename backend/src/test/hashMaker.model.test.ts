@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import { HashMaker } from "../model/hashMaker.model";
+import { HashMaker } from "../model/helpers/hashMaker.model";
 
 describe("hash maker", () => {
     test("is right length", () => {

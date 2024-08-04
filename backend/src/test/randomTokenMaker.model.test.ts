@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import { RandomTokenMaker } from "../model/randomTokenMaker.model";
+import { RandomTokenMaker } from "../model/helpers/randomTokenMaker.model";
 
 describe("random token maker", () => {
     test("is right length", () => {

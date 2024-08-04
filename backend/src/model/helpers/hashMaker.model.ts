@@ -1,5 +1,5 @@
 import { Hmac, createHmac } from "crypto";
-import { env } from "../config/env";
+import { env } from "../../config/env";
 
 export class HashMaker {
     public static make(msg: string): string {

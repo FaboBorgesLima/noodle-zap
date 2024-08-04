@@ -1,11 +1,11 @@
 import { Db, MongoClient, ObjectId } from "mongodb";
 import { CommonStorage } from "./commonStorage.model";
-import { ItemInDb } from "./itemInDb.model";
-import { PostModel } from "./post.model";
-import { env } from "../config/env";
-import { PostSchema } from "../schema/post.schema";
-import { PostModelSchemaAdapter } from "./postModelSchemaAdapter.model";
-import { ItemInDbObjectId } from "./itemInDbObjectId.model";
+import { ItemInDb } from "../itemInDb.model";
+import { PostModel } from "../post.model";
+import { env } from "../../config/env";
+import { PostSchema } from "../../schema/post.schema";
+import { PostModelSchemaAdapter } from "../postModelSchemaAdapter.model";
+import { ItemInDbObjectId } from "../itemInDbObjectId.model";
 
 export class PostStorage extends CommonStorage<PostModel, ObjectId> {
     protected readonly collectionName = "posts";

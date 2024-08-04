@@ -1,6 +1,6 @@
 import { afterAll, describe, expect, test } from "@jest/globals";
 import { connPoll } from "../connection/mysql";
-import { UserStorage } from "../model/userStorage.model";
+import { UserStorage } from "../model/storage/userStorage.model";
 import { UserModel } from "../model/user.model";
 import { env } from "../config/env";
 

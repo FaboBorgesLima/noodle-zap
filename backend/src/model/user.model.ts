@@ -1,7 +1,7 @@
-import { HashMaker } from "./hashMaker.model";
+import { HashMaker } from "./helpers/hashMaker.model";
 import { HasJSON } from "./hasJson.interface";
-import { RandomTokenMaker } from "./randomTokenMaker.model";
-import { Validator } from "./validator.model";
+import { RandomTokenMaker } from "./helpers/randomTokenMaker.model";
+import { Validator } from "./helpers/validator.model";
 
 export class UserModel implements HasJSON {
     protected constructor(
