@@ -1,4 +1,4 @@
-import { createConnection, createPool } from "mysql2/promise";
+import { createPool } from "mysql2/promise";
 import { env } from "../config/env";
 
 export const connPoll = createPool({

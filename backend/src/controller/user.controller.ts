@@ -6,6 +6,7 @@ import { UserModel } from "../model/user.model";
 import { HashMaker } from "../model/helpers/hashMaker.model";
 import { ItemInDb } from "../model/itemInDb.model";
 import { connPoll } from "../connection/mysql";
+import { HTTPCodes } from "../enum/httpCodes.enum";
 
 export class UserController {
     private static conn = connPoll.getConnection();
@@ -24,7 +25,7 @@ export class UserController {
         const validated = validator.validate(req.body);
 
         if (!validated) {
-            res.sendStatus(400);
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
 
@@ -35,14 +36,14 @@ export class UserController {
         );
 
         if (!user) {
-            res.sendStatus(400);
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
 
         const userInDb = await (await this.getUserStorage()).create(user);
 
         if (!userInDb) {
-            res.sendStatus(400);
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
 
@@ -58,7 +59,7 @@ export class UserController {
         const validated = validator.validate(req.body);
 
         if (!validated) {
-            res.sendStatus(400);
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
 
             return;
         }
@@ -71,7 +72,7 @@ export class UserController {
         );
 
         if (!userInDb) {
-            res.sendStatus(400);
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
 
             return;
         }
@@ -88,7 +89,7 @@ export class UserController {
         const validated = validator.validate(req.params);
 
         if (!validated) {
-            res.sendStatus(400);
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
 
@@ -97,7 +98,7 @@ export class UserController {
         ).getByName(validated.name);
 
         if (!user) {
-            res.sendStatus(404);
+            res.sendStatus(HTTPCodes.NOT_FOUND);
             return;
         }
 
@@ -112,7 +113,7 @@ export class UserController {
         const validated = validator.validate(req.body);
 
         if (!validated) {
-            res.sendStatus(400);
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
 
@@ -121,7 +122,7 @@ export class UserController {
         ).getByToken(validated.token);
 
         if (!userInDb) {
-            res.sendStatus(400);
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
 
@@ -142,10 +143,10 @@ export class UserController {
         const newUser = await (await this.getUserStorage()).update(user);
 
         if (newUser) {
-            res.sendStatus(200);
+            res.sendStatus(HTTPCodes.OK);
             return;
         }
 
-        res.sendStatus(400);
+        res.sendStatus(HTTPCodes.BAD_REQUEST);
     }
 }

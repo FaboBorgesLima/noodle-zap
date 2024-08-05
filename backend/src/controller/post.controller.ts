@@ -7,6 +7,7 @@ import { Validator } from "../model/helpers/validator.model";
 import { PostModel } from "../model/post.model";
 import { MongodbUserModelSchemaAdapter } from "../model/mongodbUserModelSchemaAdapter.model";
 import { mongoClient } from "../connection/mongo";
+import { HTTPCodes } from "../enum/httpCodes.enum";
 
 export class PostController {
     constructor() {}
@@ -25,22 +26,26 @@ export class PostController {
         const validated = validator.validate(req.body);
 
         if (!validated) {
-            res.sendStatus(400);
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
+            return;
+        }
+        const post = PostModel.factory(
+            validated.text,
+            MongodbUserModelSchemaAdapter.userModelInDbToMongodbUserModel(
+                res.locals.user
+            ),
+            validated.title
+        );
+
+        if (!post) {
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
 
-        const item = await this.storage.create(
-            PostModel.factory(
-                validated.text,
-                MongodbUserModelSchemaAdapter.userModelInDbToMongodbUserModel(
-                    res.locals.user
-                ),
-                validated.title
-            )
-        );
+        const item = await this.storage.create(post);
 
         if (!item) {
-            res.sendStatus(400);
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
 
@@ -59,7 +64,7 @@ export class PostController {
         const validated = validator.validate(req.query);
 
         if (!validated) {
-            res.send(400);
+            res.send(HTTPCodes.BAD_REQUEST);
             return;
         }
 

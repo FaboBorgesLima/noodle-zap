@@ -34,11 +34,21 @@ export class PostModel implements HasJSON {
         comments: ItemInDb<CommentModel, ObjectId>[],
         likes: LikeModel[]
     ): PostModel;
+    /**
+     *
+     * @param text
+     * @param user
+     * @param title - needs to have
+     *
+     * # create factory
+     *
+     *  creates a new Post
+     */
     static factory(
         text: string,
         user: ItemInDb<MongodbUserModel, Int32>,
         title: string
-    ): PostModel;
+    ): PostModel | void;
     static factory(
         text: string,
         user: ItemInDb<MongodbUserModel, Int32>,
@@ -46,7 +56,7 @@ export class PostModel implements HasJSON {
         date?: Date,
         comments?: ItemInDb<CommentModel, ObjectId>[],
         likes?: LikeModel[]
-    ): PostModel {
+    ): PostModel | void {
         if (
             likes === undefined ||
             comments === undefined ||
