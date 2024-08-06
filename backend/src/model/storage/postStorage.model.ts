@@ -6,6 +6,8 @@ import { env } from "../../config/env";
 import { PostSchema } from "../../schema/post.schema";
 import { PostModelSchemaAdapter } from "../postModelSchemaAdapter.model";
 import { ItemInDbObjectId } from "../itemInDbObjectId.model";
+import { CommentModel } from "../comment.model";
+import { CommentModelSchemaAdapter } from "../commentModelSchemaAdapter.model";
 
 export class PostStorage extends CommonStorage<PostModel, ObjectId> {
     protected readonly collectionName = "posts";
@@ -97,5 +99,29 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
 
             return items;
         } catch {}
+    }
+
+    async addComment(
+        comment: CommentModel,
+        postId: ObjectId
+    ): Promise<ItemInDb<CommentModel, ObjectId> | void> {
+        const itemInDb = new ItemInDbObjectId(comment, new ObjectId());
+
+        const insert = await this.db
+            .collection<PostSchema>(this.collectionName)
+            .updateOne(
+                { _id: postId },
+                {
+                    $push: {
+                        comments:
+                            CommentModelSchemaAdapter.modelInDbToSchema(
+                                itemInDb
+                            ),
+                    },
+                }
+            );
+        if (insert.acknowledged) {
+            return itemInDb;
+        }
     }
 }

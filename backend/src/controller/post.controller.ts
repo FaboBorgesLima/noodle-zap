@@ -8,16 +8,14 @@ import { PostModel } from "../model/post.model";
 import { MongodbUserModelSchemaAdapter } from "../model/mongodbUserModelSchemaAdapter.model";
 import { mongoClient } from "../connection/mongo";
 import { HTTPCodes } from "../enum/httpCodes.enum";
+import { ResponseWithAuth } from "../middleware/auth.middleware";
 
 export class PostController {
     constructor() {}
 
     private static storage = new PostStorage(mongoClient);
 
-    static async create(
-        req: Request,
-        res: Response<any, { user: ItemInDb<UserModel> }>
-    ) {
+    static async create(req: Request, res: ResponseWithAuth) {
         const validator = new JsonValidator({
             title: Validator.validateStringLength(3, 255),
             text: Validator.validateStringLength(3, 5000),
@@ -52,10 +50,7 @@ export class PostController {
         res.json(item.toJSON());
     }
 
-    static async getPage(
-        req: Request,
-        res: Response<any, { user: ItemInDb<UserModel> }>
-    ) {
+    static async getPage(req: Request, res: ResponseWithAuth) {
         const validator = new JsonValidator({
             page: Validator.validateUnsignInt,
             length: Validator.validateUnsignInt,

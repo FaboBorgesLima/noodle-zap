@@ -4,6 +4,7 @@ import { connPoll } from "../connection/mysql";
 import { UserStorage } from "../model/storage/userStorage.model";
 import { Auth } from "../middleware/auth.middleware";
 import { PostController } from "../controller/post.controller";
+import { CommentControler } from "../controller/comment.controller";
 
 const apiRoutes = express.Router();
 
@@ -53,5 +54,22 @@ postRoutes.post("/auth/create", PostController.create.bind(PostController));
 postRoutes.get("/auth/page", PostController.getPage.bind(PostController));
 
 apiRoutes.use("/post", postRoutes);
+
+// ----------------------------------------- comment routes
+
+const commentRoutes = express.Router();
+
+commentRoutes.use("/auth", async (req, res, next) => {
+    const conn = await connPoll.getConnection();
+
+    new Auth(new UserStorage(conn)).middleware(req, res, next);
+    conn.release();
+});
+commentRoutes.post(
+    "/auth/create",
+    CommentControler.create.bind(CommentControler)
+);
+
+apiRoutes.use("/comment", commentRoutes);
 
 export { apiRoutes };

@@ -5,6 +5,9 @@ import { ItemInDb } from "./itemInDb.model";
 import { LikeModel } from "./likeModel.model";
 import { MongodbUserModel } from "./mongodbUser.model";
 import { CommentIndb } from "./commentInDb.model";
+import { JsonValidator } from "./helpers/jsonValidator.model";
+import { Validator } from "./helpers/validator.model";
+import { TextSizes } from "../enum/textSizes.enum";
 
 export class PostModel implements HasJSON {
     private comments: CommentIndb[] = [];
@@ -62,7 +65,28 @@ export class PostModel implements HasJSON {
             comments === undefined ||
             date === undefined
         ) {
-            return new PostModel(text, user, title, new Date());
+            const validator = new JsonValidator({
+                text: Validator.validateStringLength(
+                    TextSizes.POST_TEXT_MIN,
+                    TextSizes.POST_TEXT_MAX
+                ),
+                title: Validator.validateStringLength(
+                    TextSizes.POST_TITLE_MIN,
+                    TextSizes.POST_TEXT_MAX
+                ),
+            });
+
+            const validated = validator.validate({ text, title });
+
+            if (validated)
+                return new PostModel(
+                    validated.text,
+                    user,
+                    validated.title,
+                    new Date()
+                );
+
+            return;
         }
 
         const post = new PostModel(text, user, title, date);
