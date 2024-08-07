@@ -9,7 +9,6 @@ describe("mongodb user model schema adapter", () => {
     test("model in db to schema", () => {
         const userEmail = "email@email.com";
         const userName = "name";
-        const userId = "123";
 
         const model = new ItemInDbInt32(
             MongodbUserModel.factory(userName, userEmail),

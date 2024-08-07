@@ -18,7 +18,7 @@ describe("post model schema adapter", () => {
             new Int32(123)
         );
 
-        const model = PostModel.load(
+        const model = PostModel.factory(
             text,
             user,
             title,
