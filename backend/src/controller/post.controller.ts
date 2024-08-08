@@ -77,4 +77,26 @@ export class PostController {
             posts: posts.map((post) => post.toJSON()),
         });
     }
+
+    static async getById(req: Request, res: Response) {
+        const validator = new JsonValidator({
+            id: Validator.validateObjectIdHexString,
+        });
+
+        const validated = validator.validate(req.params);
+
+        if (!validated) {
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
+            return;
+        }
+
+        const post = await this.storage.getById(validated.id);
+
+        if (!post) {
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
+            return;
+        }
+
+        res.json(post.toJSON());
+    }
 }

@@ -52,6 +52,7 @@ postRoutes.use("/auth", async (req, res, next) => {
 postRoutes.post("/auth/create", PostController.create.bind(PostController));
 
 postRoutes.get("/auth/page", PostController.getPage.bind(PostController));
+postRoutes.get("/by-id/:id", PostController.getById.bind(PostController));
 
 apiRoutes.use("/post", postRoutes);
 
