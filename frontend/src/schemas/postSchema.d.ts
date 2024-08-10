@@ -1,3 +1,5 @@
+import { UserMongoDb } from "./userMongodb";
+
 export interface PostSchema {
     title: string;
     text: string;
@@ -6,8 +8,4 @@ export interface PostSchema {
     comments: { text: string; date: number; user: UserMongoDb }[];
     likes: { date: number; user: UserMongoDb }[];
     id: string;
-}
-interface UserMongoDb {
-    id: string;
-    name: string;
 }

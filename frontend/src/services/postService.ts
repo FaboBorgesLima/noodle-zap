@@ -23,13 +23,24 @@ export class PostService {
         length: number,
         token: string
     ): Promise<{ posts: PostSchema[] } | void> {
-        const { data } = await instance.get<{ posts: PostSchema[] }>(
-            "/api/post/auth/page",
-            {
-                headers: { Authorization: `bearer ${token}` },
-                params: { page, length },
-            }
-        );
-        return data;
+        try {
+            const { data } = await instance.get<{ posts: PostSchema[] }>(
+                "/api/post/auth/page",
+                {
+                    headers: { Authorization: `bearer ${token}` },
+                    params: { page, length },
+                }
+            );
+            return data;
+        } catch {}
+    }
+
+    static async getById(id: string): Promise<void | PostSchema> {
+        try {
+            const { data } = await instance.get<PostSchema>(
+                `/api/post/by-id/${id}`
+            );
+            return data;
+        } catch {}
     }
 }

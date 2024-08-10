@@ -6,6 +6,7 @@ import "./index.css";
 import { SignUp, Initial, Login, Welcome } from "./pages";
 import { Home, Logged, Profile } from "./pages/logged";
 import { CreatePost } from "./pages/logged/CreatePost";
+import { Post } from "./pages/logged/Post";
 
 const router = createBrowserRouter([
     {
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
             { path: "", element: <Home></Home> },
             { path: "profile", element: <Profile></Profile> },
             { path: "create-post", element: <CreatePost></CreatePost> },
+            { path: "post/:id", element: <Post></Post> },
         ],
     },
 ]);
