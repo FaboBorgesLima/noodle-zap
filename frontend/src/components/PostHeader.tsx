@@ -2,7 +2,7 @@ import { FC } from "react";
 import { UserMongoDb } from "../schemas/userMongodb";
 import { MiniProfile } from "./MiniProfile";
 import { Link } from "react-router-dom";
-import { IoChevronForward } from "react-icons/io5";
+import { IoChevronForwardCircleOutline } from "react-icons/io5";
 
 type PostHeaderProps = {
     user: UserMongoDb;
@@ -35,7 +35,7 @@ export const PostHeader: FC<PostHeaderProps> = (props) => {
                 </div>
             </div>
             {props.hasLinkToPost ? (
-                <IoChevronForward className="text-4xl my-auto"></IoChevronForward>
+                <IoChevronForwardCircleOutline className="text-4xl my-auto"></IoChevronForwardCircleOutline>
             ) : (
                 <></>
             )}

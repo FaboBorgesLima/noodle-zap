@@ -77,7 +77,7 @@ export class UserController {
             return;
         }
 
-        res.status(200).json({
+        res.status(HTTPCodes.OK).json({
             user: userInDb.getItem().toJSON(),
             id: userInDb.getId(),
         });
