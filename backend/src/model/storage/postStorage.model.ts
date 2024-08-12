@@ -1,4 +1,4 @@
-import { Db, MongoClient, ObjectId } from "mongodb";
+import { Db, Int32, MongoClient, ObjectId } from "mongodb";
 import { CommonStorage } from "./commonStorage.model";
 import { ItemInDb } from "../itemInDb.model";
 import { PostModel } from "../post.model";
@@ -8,9 +8,12 @@ import { PostModelSchemaAdapter } from "../postModelSchemaAdapter.model";
 import { ItemInDbObjectId } from "../itemInDbObjectId.model";
 import { CommentModel } from "../comment.model";
 import { CommentModelSchemaAdapter } from "../commentModelSchemaAdapter.model";
+import { ItemInDbInt32 } from "../itemInDbInt32.model";
+import { UserModel } from "../user.model";
+import { MongodbUserModelSchemaAdapter } from "../mongodbUserModelSchemaAdapter.model";
 
 export class PostStorage extends CommonStorage<PostModel, ObjectId> {
-    protected readonly collectionName = "posts";
+    protected readonly COLLECTION_NAME = "posts";
     protected db: Db;
     constructor(protected mongoClient: MongoClient) {
         super();
@@ -22,7 +25,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
     ): Promise<ItemInDb<PostModel, ObjectId> | void> {
         try {
             const insert = await this.db
-                .collection<PostSchema>(this.collectionName)
+                .collection<PostSchema>(this.COLLECTION_NAME)
                 .insertOne(PostModelSchemaAdapter.modelToSchema(item));
 
             return new ItemInDbObjectId(item, insert.insertedId);
@@ -35,7 +38,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
     ): Promise<ItemInDb<PostModel, ObjectId> | void> {
         try {
             this.db
-                .collection<PostSchema>(this.collectionName)
+                .collection<PostSchema>(this.COLLECTION_NAME)
                 .updateOne(
                     { _id: ObjectId.createFromHexString(itemInDb.getId()) },
                     PostModelSchemaAdapter.modelToSchema(itemInDb.getItem())
@@ -45,7 +48,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
     async delete(id: ObjectId): Promise<boolean> {
         try {
             const res = await this.db
-                .collection<PostSchema>(this.collectionName)
+                .collection<PostSchema>(this.COLLECTION_NAME)
                 .deleteOne({ _id: id });
 
             return res.acknowledged;
@@ -55,7 +58,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
     async getById(id: ObjectId): Promise<ItemInDb<PostModel, ObjectId> | void> {
         try {
             const item = await this.db
-                .collection<PostSchema>(this.collectionName)
+                .collection<PostSchema>(this.COLLECTION_NAME)
                 .findOne({ _id: id });
 
             if (!item) return;
@@ -76,7 +79,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
             const items: ItemInDb<PostModel>[] = [];
 
             const query = this.db
-                .collection<PostSchema>(this.collectionName)
+                .collection<PostSchema>(this.COLLECTION_NAME)
                 .find()
                 .skip(page * pageSize);
 
@@ -108,7 +111,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
         const itemInDb = new ItemInDbObjectId(comment, new ObjectId());
 
         const insert = await this.db
-            .collection<PostSchema>(this.collectionName)
+            .collection<PostSchema>(this.COLLECTION_NAME)
             .updateOne(
                 { _id: postId },
                 {
@@ -123,5 +126,27 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
         if (insert.acknowledged) {
             return itemInDb;
         }
+    }
+
+    async deletePostFromUser(
+        postId: ObjectId,
+        user: ItemInDbInt32<UserModel>
+    ): Promise<boolean> {
+        try {
+            const couldDelete = await this.db
+                .collection<PostSchema>(this.COLLECTION_NAME)
+                .deleteOne({
+                    _id: postId,
+                    usr: {
+                        id: user.getRawId(),
+                        name: user.getItem().getName(),
+                        email: user.getItem().getEmail(),
+                    },
+                });
+
+            return couldDelete.acknowledged;
+        } catch {}
+
+        return false;
     }
 }

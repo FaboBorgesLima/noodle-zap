@@ -17,5 +17,9 @@ postRoutes.post("/auth/create", PostController.create.bind(PostController));
 
 postRoutes.get("/auth/page", PostController.getPage.bind(PostController));
 postRoutes.get("/by-id/:id", PostController.getById.bind(PostController));
+postRoutes.delete(
+    "/delete/:id",
+    PostController.deletePost.bind(PostController)
+);
 
 export { postRoutes };

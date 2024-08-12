@@ -99,4 +99,29 @@ export class PostController {
 
         res.json(post.toJSON());
     }
+
+    static async deletePost(req: Request, res: ResponseWithAuth) {
+        const validator = new JsonValidator({
+            id: Validator.validateObjectIdHexString,
+        });
+
+        const validated = validator.validate(req.body);
+
+        if (!validated) {
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
+            return;
+        }
+
+        const couldDelete = await this.storage.deletePostFromUser(
+            validated.id,
+            res.locals.user
+        );
+
+        if (!couldDelete) {
+            res.sendStatus(HTTPCodes.FORBIDDEN);
+            return;
+        }
+
+        res.sendStatus(HTTPCodes.OK);
+    }
 }

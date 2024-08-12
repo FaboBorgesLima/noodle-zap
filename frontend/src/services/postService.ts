@@ -43,4 +43,14 @@ export class PostService {
             return data;
         } catch {}
     }
+
+    static async deletePost(token: string, id: string): Promise<boolean> {
+        try {
+            await instance.delete(`/api/post/delete/${id}`, {
+                headers: { Authorization: `bearer ${token}` },
+            });
+            return true;
+        } catch {}
+        return false;
+    }
 }

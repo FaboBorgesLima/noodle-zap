@@ -4,6 +4,7 @@ import { UserStorage } from "../model/storage/userStorage.model";
 import { BearerToken } from "../model/helpers/bearerToken.model";
 import { UserModel } from "../model/user.model";
 import { ItemInDb } from "../model/itemInDb.model";
+import { Int32 } from "mongodb";
 
 export class Auth extends Middleware {
     constructor(private userStorage: UserStorage) {
@@ -34,4 +35,7 @@ export class Auth extends Middleware {
         next();
     }
 }
-export type ResponseWithAuth = Response<any, { user: ItemInDb<UserModel> }>;
+export type ResponseWithAuth = Response<
+    any,
+    { user: ItemInDb<UserModel, Int32> }
+>;
