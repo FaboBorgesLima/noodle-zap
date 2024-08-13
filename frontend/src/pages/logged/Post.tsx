@@ -5,19 +5,28 @@ import { PostSchema } from "../../schemas/postSchema";
 import { PostHeader } from "../../components/PostHeader";
 import { CommentForm } from "../../components/CommentForm";
 import { CommentCard } from "../../components/CommentCard";
+import { UserService } from "../../services/userService";
 
 export const Post: FC<{}> = () => {
     const { id } = useParams();
     const [postNotFound, setPostNotFound] = useState(false);
     const [post, setPost] = useState<void | PostSchema>();
+
+    const [isLoggedUserPost, setIsLoggedUserPost] = useState(false);
+
     useEffect(() => {
         if (id) {
-            PostService.getById(id).then((data) => {
+            PostService.getById(id).then(async (data) => {
                 if (!data) {
                     setPostNotFound(true);
                     return;
                 }
                 setPost(data);
+
+                const user = UserService.getUser();
+                if (!user) return;
+
+                setIsLoggedUserPost(data.user.id == user.id);
             });
         }
     }, [id]);
@@ -49,21 +58,25 @@ export const Post: FC<{}> = () => {
                     </span>
                 )}
             </div>
-            <CommentForm
-                postId={id ? id : ""}
-                onUploadComment={(comment) => {
-                    if (post) {
-                        post.comments.push(comment);
 
-                        setPost({ ...post });
-                    }
-                }}
-            ></CommentForm>
-            {post ? (
+            {!postNotFound ? (
                 <section className="gap-4 flex flex-col">
                     <h2 className="text-2xl underline">comments</h2>
-                    {post.comments.map((comment) => (
-                        <CommentCard {...comment}></CommentCard>
+                    <CommentForm
+                        postId={id ? id : ""}
+                        onUploadComment={(comment) => {
+                            if (post) {
+                                post.comments.push(comment);
+
+                                setPost({ ...post });
+                            }
+                        }}
+                    ></CommentForm>
+                    {post?.comments.map((comment) => (
+                        <CommentCard
+                            {...comment}
+                            key={comment.id}
+                        ></CommentCard>
                     ))}
                 </section>
             ) : (

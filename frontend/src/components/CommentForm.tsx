@@ -4,6 +4,7 @@ import { AutoHeightTextArea } from "./AutoHeightTextArea";
 import { CommentService } from "../services/commentService";
 import { UserService } from "../services/userService";
 import { CommentSchema } from "../schemas/commentSchema";
+import { MiniProfile } from "./MiniProfile";
 
 type CommentFormProps = {
     postId: string;
@@ -15,6 +16,8 @@ export const CommentForm: FC<CommentFormProps> = (props) => {
     const [isUploading, setIsUploading] = useState(false);
 
     const navigate = useNavigate();
+
+    const user = UserService.getUser();
 
     return (
         <Form
@@ -46,15 +49,20 @@ export const CommentForm: FC<CommentFormProps> = (props) => {
                 isUploading ? "opacity-50" : ""
             }`}
         >
-            <h2 className="text-lg text-center underline">
-                write a new comment
-            </h2>
-            <div></div>
+            {user ? (
+                <MiniProfile
+                    user={{ name: user.user.name, id: user.id }}
+                ></MiniProfile>
+            ) : (
+                <></>
+            )}
+
             <AutoHeightTextArea
                 onChange={(ev) => {
                     setText(ev.currentTarget.value);
                 }}
                 value={text}
+                placeholder="write new comment"
                 className="form-input w-full"
             ></AutoHeightTextArea>
             <button className="form-btn w-full">create</button>

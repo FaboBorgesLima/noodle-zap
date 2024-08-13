@@ -1,3 +1,4 @@
+import { CommentSchema } from "./commentSchema";
 import { UserMongoDb } from "./userMongodb";
 
 export interface PostSchema {
@@ -5,7 +6,7 @@ export interface PostSchema {
     text: string;
     user: UserMongoDb;
     date: number;
-    comments: { text: string; date: number; user: UserMongoDb }[];
+    comments: CommentSchema[];
     likes: { date: number; user: UserMongoDb }[];
     id: string;
 }

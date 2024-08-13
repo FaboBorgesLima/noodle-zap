@@ -24,7 +24,7 @@ export class UserService {
                 }
             );
 
-            this.setToken(data.user.token);
+            this.setUser(data);
 
             return data;
         } catch {}
@@ -52,7 +52,7 @@ export class UserService {
                 }
             );
 
-            this.setToken(data.user.token);
+            this.setUser(data);
 
             return data;
         } catch {}
@@ -69,15 +69,35 @@ export class UserService {
         } catch {}
     }
 
-    static setToken(token: string) {
-        localStorage.setItem(this.localStorageTokenAddress, token);
+    static setUser(user: UserFromDb) {
+        localStorage.setItem(
+            this.localStorageTokenAddress,
+            JSON.stringify(user)
+        );
     }
 
-    static getToken(): string | null {
-        return localStorage.getItem(this.localStorageTokenAddress);
+    static getUser(): UserFromDb | void {
+        try {
+            const userString = localStorage.getItem(
+                this.localStorageTokenAddress
+            );
+
+            if (!userString) return;
+            const user: UserFromDb = JSON.parse(userString);
+
+            return user;
+        } catch {}
     }
 
-    static clearToken(): void {
+    static getToken(): string | void {
+        const user = this.getUser();
+
+        if (!user) return;
+
+        return user.user.token;
+    }
+
+    static clearUser(): void {
         localStorage.removeItem(this.localStorageTokenAddress);
     }
 

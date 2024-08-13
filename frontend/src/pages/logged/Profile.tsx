@@ -17,7 +17,7 @@ export const Profile: FC = () => {
                         user?.user.token ? user?.user.token : ""
                     );
 
-                    UserService.clearToken();
+                    UserService.clearUser();
 
                     navigate("/login", { replace: true });
                 }}

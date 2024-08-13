@@ -4,4 +4,5 @@ export interface CommentSchema {
     text: string;
     date: number;
     user: UserMongoDb;
+    id: string;
 }
