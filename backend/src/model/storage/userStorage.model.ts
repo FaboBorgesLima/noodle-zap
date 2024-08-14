@@ -4,9 +4,12 @@ import { ItemInDb } from "../itemInDb.model";
 import { UserModel } from "../user.model";
 import { UserSchema } from "../../schema/user.schema";
 import { ItemInDbNumber } from "../itemInDbNumber.model";
+import { PostStorage } from "./postStorage.model";
+import { MongoClient } from "mongodb";
+import { MongodbUserModelSchemaAdapter } from "../mongodbUserModelSchemaAdapter.model";
 
 export class UserStorage extends CommonStorage<UserModel, number> {
-    constructor(private conn: PoolConnection) {
+    constructor(private conn: PoolConnection, private client: MongoClient) {
         super();
     }
     async create(item: UserModel): Promise<void | ItemInDb<UserModel, number>> {
@@ -40,7 +43,17 @@ export class UserStorage extends CommonStorage<UserModel, number> {
                 ]
             );
 
-            return itemInDb;
+            const postStorage = new PostStorage(this.client);
+
+            if (
+                await postStorage.updateUserInPosts(
+                    MongodbUserModelSchemaAdapter.userModelInDbToMongodbUserModel(
+                        itemInDb
+                    )
+                )
+            ) {
+                return itemInDb;
+            }
         } catch {}
     }
     async delete(id: number): Promise<boolean> {

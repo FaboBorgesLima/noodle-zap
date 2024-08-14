@@ -11,6 +11,7 @@ import { CommentModelSchemaAdapter } from "../commentModelSchemaAdapter.model";
 import { ItemInDbInt32 } from "../itemInDbInt32.model";
 import { UserModel } from "../user.model";
 import { MongodbUserModelSchemaAdapter } from "../mongodbUserModelSchemaAdapter.model";
+import { MongodbUserModel } from "../mongodbUser.model";
 
 export class PostStorage extends CommonStorage<PostModel, ObjectId> {
     protected readonly COLLECTION_NAME = "posts";
@@ -68,6 +69,22 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
                 item._id
             );
         } catch {}
+    }
+
+    async updateUserInPosts(
+        user: ItemInDbInt32<MongodbUserModel>
+    ): Promise<boolean> {
+        try {
+            const result = await this.db
+                .collection<PostSchema>(this.COLLECTION_NAME)
+                .updateMany(
+                    { "usr.id": user.getRawId() },
+                    MongodbUserModelSchemaAdapter.modelInDbToSchema(user)
+                );
+
+            return result.acknowledged;
+        } catch {}
+        return false;
     }
 
     async getPage(

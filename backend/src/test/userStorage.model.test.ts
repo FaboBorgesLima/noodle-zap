@@ -3,6 +3,7 @@ import { connPoll } from "../connection/mysql";
 import { UserStorage } from "../model/storage/userStorage.model";
 import { UserModel } from "../model/user.model";
 import { env } from "../config/env";
+import { mongoClient } from "../connection/mongo";
 
 describe("user storage", () => {
     test("can crud", async () => {
@@ -13,7 +14,7 @@ describe("user storage", () => {
 
         await conn.beginTransaction();
 
-        const storage = new UserStorage(conn);
+        const storage = new UserStorage(conn, mongoClient);
 
         // create
         const userModel = UserModel.createFactory(
@@ -78,7 +79,7 @@ describe("user storage", () => {
 
         await conn.beginTransaction();
 
-        const storage = new UserStorage(conn);
+        const storage = new UserStorage(conn, mongoClient);
 
         const result = await storage.delete(999999);
 
