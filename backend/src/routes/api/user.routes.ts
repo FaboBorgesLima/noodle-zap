@@ -1,7 +1,5 @@
-import { connPoll } from "../../connection/mysql";
 import { UserController } from "../../controller/user.controller";
 import { Auth } from "../../middleware/auth.middleware";
-import { UserStorage } from "../../model/storage/userStorage.model";
 import express from "express";
 
 const userRoutes = express.Router();
@@ -15,12 +13,7 @@ userRoutes.post(
     UserController.loginViaToken.bind(UserController)
 );
 
-userRoutes.use("/auth", async (req, res, next) => {
-    const conn = await connPoll.getConnection();
-
-    new Auth(new UserStorage(conn)).middleware(req, res, next);
-    conn.release();
-});
+userRoutes.use("/auth", Auth.middleware.bind(Auth));
 
 userRoutes.delete("/auth/logout", UserController.logout);
 
