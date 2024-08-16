@@ -2,7 +2,7 @@
 
 this route will create a post using the user auth token, title and text
 
--   route: /api/post/delete/:id
+-   route: /api/post/auth/delete/:id
 -   headers: Authorization: bearer
 -   params (url):
 

@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import { PostStorage } from "../model/storage/postStorage.model";
-import { UserModel } from "../model/user.model";
-import { ItemInDb } from "../model/itemInDb.model";
 import { JsonValidator } from "../model/helpers/jsonValidator.model";
 import { Validator } from "../model/helpers/validator.model";
 import { PostModel } from "../model/post.model";
@@ -105,12 +103,16 @@ export class PostController {
             id: Validator.validateObjectIdHexString,
         });
 
-        const validated = validator.validate(req.body);
+        console.debug(req.params.id);
+
+        const validated = validator.validate(req.params);
 
         if (!validated) {
             res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
+
+        console.debug(res.locals.user);
 
         const couldDelete = await this.storage.deletePostFromUser(
             validated.id,

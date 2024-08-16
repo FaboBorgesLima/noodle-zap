@@ -154,11 +154,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
                 .collection<PostSchema>(this.COLLECTION_NAME)
                 .deleteOne({
                     _id: postId,
-                    usr: {
-                        id: user.getRawId(),
-                        name: user.getItem().getName(),
-                        email: user.getItem().getEmail(),
-                    },
+                    "usr.id": user.getRawId(),
                 });
 
             return couldDelete.acknowledged;

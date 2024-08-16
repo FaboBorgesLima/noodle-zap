@@ -1,14 +1,16 @@
 import { FC, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { PostService } from "../../services/postService";
 import { PostSchema } from "../../schemas/postSchema";
 import { PostHeader } from "../../components/PostHeader";
 import { CommentForm } from "../../components/CommentForm";
 import { CommentCard } from "../../components/CommentCard";
 import { UserService } from "../../services/userService";
+import { IoTrashBinOutline } from "react-icons/io5";
 
 export const Post: FC<{}> = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [postNotFound, setPostNotFound] = useState(false);
     const [post, setPost] = useState<void | PostSchema>();
 
@@ -35,12 +37,45 @@ export const Post: FC<{}> = () => {
         <div className="mx-auto container m-4 flex flex-col gap-4">
             <div className="flex flex-col">
                 {post ? (
-                    <PostHeader
-                        user={post.user}
-                        date={post.date}
-                        title={post.title}
-                        id={post.id}
-                    ></PostHeader>
+                    <div className="flex flex-row justify-between">
+                        <PostHeader
+                            user={post.user}
+                            date={post.date}
+                            title={post.title}
+                            id={post.id}
+                        ></PostHeader>
+                        {isLoggedUserPost ? (
+                            <button
+                                className="bg-red-500 rounded-2xl p-4 flex flex-row items-center gap-4"
+                                onClick={async () => {
+                                    const wannaDelete = confirm(
+                                        "do you wanna to delete this post permanently?"
+                                    );
+
+                                    const token = UserService.getToken();
+
+                                    if (wannaDelete && token) {
+                                        const couldDelete =
+                                            await PostService.deletePost(
+                                                token,
+                                                post.id
+                                            );
+
+                                        if (couldDelete) {
+                                            navigate("/logged");
+                                        }
+                                    }
+                                }}
+                            >
+                                <span className="text-xl font-bold uppercase">
+                                    delete post
+                                </span>
+                                <IoTrashBinOutline className="text-3xl "></IoTrashBinOutline>
+                            </button>
+                        ) : (
+                            <></>
+                        )}
+                    </div>
                 ) : (
                     <></>
                 )}
