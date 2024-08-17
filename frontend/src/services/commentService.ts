@@ -16,4 +16,20 @@ export class CommentService {
             return data;
         } catch {}
     }
+
+    static async delete(
+        token: string,
+        postId: string,
+        commentId: string
+    ): Promise<boolean> {
+        try {
+            await instance.delete(
+                `/api/comment/auth/delete/${postId}/${commentId}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            return true;
+        } catch {}
+
+        return false;
+    }
 }

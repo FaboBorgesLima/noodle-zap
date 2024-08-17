@@ -95,15 +95,13 @@ export class PostController {
             return;
         }
 
-        res.json(post.toJSON());
+        res.status(HTTPCodes.OK).json(post.toJSON());
     }
 
     static async deletePost(req: Request, res: ResponseWithAuth) {
         const validator = new JsonValidator({
             id: Validator.validateObjectIdHexString,
         });
-
-        console.debug(req.params.id);
 
         const validated = validator.validate(req.params);
 
@@ -112,11 +110,9 @@ export class PostController {
             return;
         }
 
-        console.debug(res.locals.user);
-
         const couldDelete = await this.storage.deletePostFromUser(
             validated.id,
-            res.locals.user
+            res.locals.user.getRawId()
         );
 
         if (!couldDelete) {

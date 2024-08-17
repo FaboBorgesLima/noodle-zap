@@ -9,5 +9,9 @@ commentRoutes.post(
     "/auth/create",
     CommentControler.create.bind(CommentControler)
 );
+commentRoutes.delete(
+    "/auth/delete/:postId/:commentId",
+    CommentControler.delete.bind(CommentControler)
+);
 
 export { commentRoutes };

@@ -110,6 +110,7 @@ export const Post: FC<{}> = () => {
                     {post?.comments.map((comment) => (
                         <CommentCard
                             {...comment}
+                            postId={post.id}
                             key={comment.id}
                         ></CommentCard>
                     ))}

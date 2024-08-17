@@ -9,7 +9,6 @@ import { ItemInDbObjectId } from "../itemInDbObjectId.model";
 import { CommentModel } from "../comment.model";
 import { CommentModelSchemaAdapter } from "../commentModelSchemaAdapter.model";
 import { ItemInDbInt32 } from "../itemInDbInt32.model";
-import { UserModel } from "../user.model";
 import { MongodbUserModelSchemaAdapter } from "../mongodbUserModelSchemaAdapter.model";
 import { MongodbUserModel } from "../mongodbUser.model";
 
@@ -147,19 +146,46 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
 
     async deletePostFromUser(
         postId: ObjectId,
-        user: ItemInDbInt32<UserModel>
+        userId: Int32
     ): Promise<boolean> {
         try {
             const couldDelete = await this.db
                 .collection<PostSchema>(this.COLLECTION_NAME)
                 .deleteOne({
                     _id: postId,
-                    "usr.id": user.getRawId(),
+                    "usr.id": userId,
                 });
 
             return couldDelete.acknowledged;
         } catch {}
 
+        return false;
+    }
+
+    async deleteCommentFromPostAndUser(
+        commentId: ObjectId,
+        postId: ObjectId,
+        userId: Int32
+    ): Promise<boolean> {
+        try {
+            const res = await this.db
+                .collection<PostSchema>(this.COLLECTION_NAME)
+                .updateOne(
+                    {
+                        _id: postId,
+                        comments: {
+                            $elemMatch: { "usr.id": userId, _id: commentId },
+                        },
+                    },
+                    {
+                        $pull: {
+                            comments: { _id: commentId },
+                        },
+                    }
+                );
+
+            return res.modifiedCount == 1;
+        } catch {}
         return false;
     }
 }

@@ -119,4 +119,13 @@ export class UserService {
             return data;
         } catch {}
     }
+
+    static isLoggedUserId(id: string): boolean {
+        const user = this.getUser();
+        if (!user) {
+            return false;
+        }
+
+        return user.id == id;
+    }
 }

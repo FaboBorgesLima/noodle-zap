@@ -52,4 +52,30 @@ export class CommentControler {
 
         res.json(commentInDb.toJSON());
     }
+    static async delete(req: Request, res: ResponseWithAuth) {
+        const validator = new JsonValidator({
+            postId: Validator.validateObjectIdHexString,
+            commentId: Validator.validateObjectIdHexString,
+        });
+
+        const validated = validator.validate(req.params);
+
+        if (!validated) {
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
+            return;
+        }
+
+        const deleted = await this.storage.deleteCommentFromPostAndUser(
+            validated.commentId,
+            validated.postId,
+            res.locals.user.getRawId()
+        );
+
+        if (!deleted) {
+            res.sendStatus(HTTPCodes.FORBIDDEN);
+            return;
+        }
+
+        res.sendStatus(HTTPCodes.OK);
+    }
 }
