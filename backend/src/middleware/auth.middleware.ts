@@ -6,8 +6,10 @@ import { ItemInDb } from "../model/itemInDb.model";
 import { Int32 } from "mongodb";
 import { connPoll } from "../connection/mysql";
 import { mongoClient } from "../connection/mongo";
+import { HTTPCodes } from "../enum/httpCodes.enum";
 
 export class Auth {
+    private static connPromise = connPoll.getConnection();
     static async middleware(
         req: Request,
         res: Response,
@@ -16,18 +18,17 @@ export class Auth {
         const token = BearerToken.getToken(req.headers.authorization);
 
         if (!token) {
-            next("route");
+            res.sendStatus(HTTPCodes.FORBIDDEN);
             return;
         }
 
-        const conn = await connPoll.getConnection();
-
+        const conn = await this.connPromise;
         const userStorage = new UserStorage(conn, mongoClient);
 
         const user = await userStorage.getByToken(token);
 
         if (!user) {
-            next("route");
+            res.sendStatus(HTTPCodes.FORBIDDEN);
             return;
         }
 

@@ -9,7 +9,7 @@ async function main() {
     app.use(cors({}));
 
     app.use((req, _res, next) => {
-        console.log(`${req.method}:${req.path}`);
+        console.log(`${req.method}:${req.path} ${new Date().toString()}`);
         next();
     });
 

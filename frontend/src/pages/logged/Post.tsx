@@ -68,7 +68,7 @@ export const Post: FC<{}> = () => {
                                 }}
                             >
                                 <span className="text-xl font-bold uppercase">
-                                    delete post
+                                    delete
                                 </span>
                                 <IoTrashBinOutline className="text-3xl "></IoTrashBinOutline>
                             </button>

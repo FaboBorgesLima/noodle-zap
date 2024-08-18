@@ -97,7 +97,14 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
             const query = this.db
                 .collection<PostSchema>(this.COLLECTION_NAME)
                 .find()
-                .skip(page * pageSize);
+                .skip(page * pageSize)
+                .map(
+                    (item) =>
+                        new ItemInDbObjectId(
+                            PostModelSchemaAdapter.schemaToModel(item),
+                            item._id
+                        )
+                );
 
             if (sortByDate) {
                 query.sort("dt", "desc");
@@ -106,12 +113,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
             let item = await query.tryNext();
 
             for (let i = 0; i < pageSize && item; i++) {
-                items.push(
-                    new ItemInDbObjectId(
-                        PostModelSchemaAdapter.schemaToModel(item),
-                        item._id
-                    )
-                );
+                items.push(item);
 
                 item = await query.tryNext();
             }
@@ -187,5 +189,38 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
             return res.modifiedCount == 1;
         } catch {}
         return false;
+    }
+
+    async getUserPostsPage(
+        userId: Int32,
+        page: number,
+        pageSize: number
+    ): Promise<ItemInDb<PostModel>[] | void> {
+        try {
+            const items: ItemInDb<PostModel>[] = [];
+
+            const query = await this.db
+                .collection<PostSchema>(this.COLLECTION_NAME)
+                .find({ "usr.id": userId })
+                .sort("dt", "desc")
+                .skip(page * pageSize)
+                .map(
+                    (item) =>
+                        new ItemInDbObjectId(
+                            PostModelSchemaAdapter.schemaToModel(item),
+                            item._id
+                        )
+                );
+
+            let item = await query.tryNext();
+
+            for (let i = 0; i < pageSize && item; i++) {
+                items.push(item);
+
+                item = await query.tryNext();
+            }
+
+            return items;
+        } catch {}
     }
 }

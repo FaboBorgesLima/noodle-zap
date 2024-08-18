@@ -67,11 +67,11 @@ export class PostController {
         );
 
         if (!posts) {
-            res.send(500);
+            res.send(HTTPCodes.SERVER_ERROR);
             return;
         }
 
-        res.json({
+        res.status(HTTPCodes.OK).json({
             posts: posts.map((post) => post.toJSON()),
         });
     }
@@ -121,5 +121,34 @@ export class PostController {
         }
 
         res.sendStatus(HTTPCodes.OK);
+    }
+
+    static async getUserPostsByPage(req: Request, res: ResponseWithAuth) {
+        const validator = new JsonValidator({
+            page: Validator.validateUnsignInt,
+            pageSize: Validator.validateUnsignInt,
+        });
+
+        const validated = validator.validate(req.query);
+
+        if (!validated) {
+            res.sendStatus(HTTPCodes.BAD_REQUEST);
+            return;
+        }
+
+        const page = await this.storage.getUserPostsPage(
+            res.locals.user.getRawId(),
+            validated.page,
+            validated.pageSize
+        );
+
+        if (!page) {
+            res.sendStatus(HTTPCodes.SERVER_ERROR);
+            return;
+        }
+
+        res.json({
+            posts: page.map((post) => post.toJSON()),
+        });
     }
 }
