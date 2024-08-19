@@ -5,15 +5,13 @@ import { Validator } from "../model/helpers/validator.model";
 import { UserModel } from "../model/user.model";
 import { HashMaker } from "../model/helpers/hashMaker.model";
 import { ItemInDb } from "../model/itemInDb.model";
-import { connPoll } from "../connection/mysql";
+import { pool } from "../connection/mysql";
 import { HTTPCodes } from "../enum/httpCodes.enum";
 import { mongoClient } from "../connection/mongo";
 
 export class UserController {
-    private static conn = connPoll.getConnection();
-
     private static async getUserStorage(): Promise<UserStorage> {
-        return new UserStorage(await this.conn, mongoClient);
+        return new UserStorage(pool, mongoClient);
     }
 
     static async create(req: Request, res: Response) {

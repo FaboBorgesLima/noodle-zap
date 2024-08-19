@@ -51,10 +51,10 @@ export class PostController {
     static async getPage(req: Request, res: ResponseWithAuth) {
         const validator = new JsonValidator({
             page: Validator.validateUnsignInt,
-            length: Validator.validateUnsignInt,
+            pageSize: Validator.validateUnsignInt,
         });
 
-        const validated = validator.validate(req.query);
+        const validated = validator.validate(req.params);
 
         if (!validated) {
             res.send(HTTPCodes.BAD_REQUEST);
@@ -63,7 +63,7 @@ export class PostController {
 
         const posts = await this.storage.getPage(
             validated.page,
-            validated.length
+            validated.pageSize
         );
 
         if (!posts) {
@@ -129,7 +129,7 @@ export class PostController {
             pageSize: Validator.validateUnsignInt,
         });
 
-        const validated = validator.validate(req.query);
+        const validated = validator.validate(req.params);
 
         if (!validated) {
             res.sendStatus(HTTPCodes.BAD_REQUEST);

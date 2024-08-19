@@ -4,12 +4,11 @@ import { BearerToken } from "../model/helpers/bearerToken.model";
 import { UserModel } from "../model/user.model";
 import { ItemInDb } from "../model/itemInDb.model";
 import { Int32 } from "mongodb";
-import { connPoll } from "../connection/mysql";
+import { pool } from "../connection/mysql";
 import { mongoClient } from "../connection/mongo";
 import { HTTPCodes } from "../enum/httpCodes.enum";
 
 export class Auth {
-    private static connPromise = connPoll.getConnection();
     static async middleware(
         req: Request,
         res: Response,
@@ -19,16 +18,17 @@ export class Auth {
 
         if (!token) {
             res.sendStatus(HTTPCodes.FORBIDDEN);
+
             return;
         }
 
-        const conn = await this.connPromise;
-        const userStorage = new UserStorage(conn, mongoClient);
+        const userStorage = new UserStorage(pool, mongoClient);
 
         const user = await userStorage.getByToken(token);
 
         if (!user) {
             res.sendStatus(HTTPCodes.FORBIDDEN);
+
             return;
         }
 

@@ -8,8 +8,14 @@ postRoutes.use("/auth", Auth.middleware.bind(Auth));
 
 postRoutes.post("/auth/create", PostController.create.bind(PostController));
 
-postRoutes.get("/auth/page", PostController.getPage.bind(PostController));
-postRoutes.get("/auth/user-page", PostController.getPage.bind(PostController));
+postRoutes.get(
+    "/auth/page/:page/:pageSize",
+    PostController.getPage.bind(PostController)
+);
+postRoutes.get(
+    "/auth/user-page/:page/:pageSize",
+    PostController.getUserPostsByPage.bind(PostController)
+);
 postRoutes.get("/by-id/:id", PostController.getById.bind(PostController));
 postRoutes.delete(
     "/auth/delete/:id",

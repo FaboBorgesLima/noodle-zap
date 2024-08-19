@@ -1,4 +1,4 @@
-import { Connection, PoolConnection, ResultSetHeader } from "mysql2/promise";
+import { Connection, Pool, ResultSetHeader } from "mysql2/promise";
 import { CommonStorage } from "./commonStorage.model";
 import { ItemInDb } from "../itemInDb.model";
 import { UserModel } from "../user.model";
@@ -9,12 +9,12 @@ import { MongoClient } from "mongodb";
 import { MongodbUserModelSchemaAdapter } from "../mongodbUserModelSchemaAdapter.model";
 
 export class UserStorage extends CommonStorage<UserModel, number> {
-    constructor(private conn: PoolConnection, private client: MongoClient) {
+    constructor(private pool: Connection, private client: MongoClient) {
         super();
     }
     async create(item: UserModel): Promise<void | ItemInDb<UserModel, number>> {
         try {
-            const insert = await this.conn.query<ResultSetHeader>(
+            const insert = await this.pool.query<ResultSetHeader>(
                 "INSERT INTO user (email,user_name,user_password,token) VALUES (?,?,?,?)",
                 [
                     item.getEmail(),
@@ -32,7 +32,7 @@ export class UserStorage extends CommonStorage<UserModel, number> {
     ): Promise<void | ItemInDb<UserModel, number>> {
         try {
             const schema = this.modelToSchema(itemInDb);
-            const update = await this.conn.query<ResultSetHeader>(
+            const update = await this.pool.query<ResultSetHeader>(
                 "UPDATE user SET email = ?, user_name = ?,user_password = ?,token = ? WHERE user_id = ?",
                 [
                     schema.email,
@@ -58,7 +58,7 @@ export class UserStorage extends CommonStorage<UserModel, number> {
     }
     async delete(id: number): Promise<boolean> {
         try {
-            const del = await this.conn.query<ResultSetHeader>(
+            const del = await this.pool.query<ResultSetHeader>(
                 "DELETE FROM user WHERE user_id=?",
                 [id]
             );
@@ -69,7 +69,7 @@ export class UserStorage extends CommonStorage<UserModel, number> {
     }
     async getById(id: number): Promise<void | ItemInDb<UserModel, number>> {
         try {
-            const [usersSchemas] = await this.conn.query<UserSchema[]>(
+            const [usersSchemas] = await this.pool.query<UserSchema[]>(
                 "SELECT * FROM user WHERE user_id = ?",
                 [id]
             );
@@ -86,7 +86,7 @@ export class UserStorage extends CommonStorage<UserModel, number> {
     }
     async getByName(name: string): Promise<void | ItemInDb<UserModel, number>> {
         try {
-            const [usersSchemas] = await this.conn.query<UserSchema[]>(
+            const [usersSchemas] = await this.pool.query<UserSchema[]>(
                 "SELECT * FROM user WHERE user_name = ? LIMIT 1",
                 [name]
             );
@@ -102,7 +102,7 @@ export class UserStorage extends CommonStorage<UserModel, number> {
         hashPassword: string
     ): Promise<void | ItemInDb<UserModel, number>> {
         try {
-            const [usersSchemas] = await this.conn.query<UserSchema[]>(
+            const [usersSchemas] = await this.pool.query<UserSchema[]>(
                 "SELECT * FROM user WHERE email = ? AND user_password = ?",
                 [email, hashPassword]
             );
@@ -122,7 +122,7 @@ export class UserStorage extends CommonStorage<UserModel, number> {
         token: string
     ): Promise<void | ItemInDb<UserModel, number>> {
         try {
-            const [usersSchemas] = await this.conn.query<UserSchema[]>(
+            const [usersSchemas] = await this.pool.query<UserSchema[]>(
                 "SELECT * FROM user WHERE token = ?",
                 [token]
             );
