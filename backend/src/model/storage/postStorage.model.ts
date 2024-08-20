@@ -199,7 +199,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
         try {
             const items: ItemInDb<PostModel>[] = [];
 
-            const query = await this.db
+            const query = this.db
                 .collection<PostSchema>(this.COLLECTION_NAME)
                 .find({ "usr.id": userId })
                 .sort("dt", "desc")

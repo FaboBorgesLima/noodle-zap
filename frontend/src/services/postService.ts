@@ -52,4 +52,20 @@ export class PostService {
         } catch {}
         return false;
     }
+
+    static async getPostByUser(
+        userId: string | number,
+        page: number,
+        pageSize: number,
+        token: string
+    ): Promise<{ posts: PostSchema[] } | void> {
+        try {
+            const { data } = await instance.get<{ posts: PostSchema[] }>(
+                `/api/post/auth/user-page/${userId}/${page}/${pageSize}`,
+                { headers: { Authorization: `bearer ${token}` } }
+            );
+
+            return data;
+        } catch {}
+    }
 }

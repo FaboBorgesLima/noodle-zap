@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { Int32, ObjectId } from "mongodb";
 
 export class Validator {
     /**
@@ -66,6 +66,22 @@ export class Validator {
 
         try {
             return ObjectId.createFromHexString(hex);
+        } catch {}
+    }
+
+    static validateInt32(n: unknown): Int32 | void {
+        let int32String = "";
+
+        if (typeof n == "number") {
+            int32String = n.toString();
+        } else if (typeof n == "string") {
+            int32String = n;
+        } else {
+            return;
+        }
+
+        try {
+            return Int32.fromString(int32String);
         } catch {}
     }
 }

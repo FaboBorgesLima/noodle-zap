@@ -13,7 +13,7 @@ postRoutes.get(
     PostController.getPage.bind(PostController)
 );
 postRoutes.get(
-    "/auth/user-page/:page/:pageSize",
+    "/auth/user-page/:userId/:page/:pageSize",
     PostController.getUserPostsByPage.bind(PostController)
 );
 postRoutes.get("/by-id/:id", PostController.getById.bind(PostController));

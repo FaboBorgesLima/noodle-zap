@@ -4,6 +4,7 @@ import { LoggedHeader } from "../../components";
 import { UserFromDb } from "../../schemas/userFromDb";
 import { LoggedContext } from "./loggedContext";
 import { UserService } from "../../services/userService";
+import { PostService } from "../../services/postService";
 
 export const Logged: FC = () => {
     const [user, setUser] = useState<UserFromDb | null>(null);

@@ -7,6 +7,7 @@ import { MongodbUserModelSchemaAdapter } from "../model/mongodbUserModelSchemaAd
 import { mongoClient } from "../connection/mongo";
 import { HTTPCodes } from "../enum/httpCodes.enum";
 import { ResponseWithAuth } from "../middleware/auth.middleware";
+import { Int32 } from "mongodb";
 
 export class PostController {
     constructor() {}
@@ -127,6 +128,7 @@ export class PostController {
         const validator = new JsonValidator({
             page: Validator.validateUnsignInt,
             pageSize: Validator.validateUnsignInt,
+            userId: Validator.validateInt32,
         });
 
         const validated = validator.validate(req.params);
@@ -137,7 +139,7 @@ export class PostController {
         }
 
         const page = await this.storage.getUserPostsPage(
-            res.locals.user.getRawId(),
+            validated.userId,
             validated.page,
             validated.pageSize
         );
