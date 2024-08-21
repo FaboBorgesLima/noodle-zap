@@ -15,7 +15,7 @@ export const CommentCard: FC<CommentCardProps> = (props) => {
                 <MiniProfile user={props.user}></MiniProfile>
                 {UserService.isLoggedUserId(props.user.id) ? (
                     <button
-                        className="bg-red-500 text-white font bold text-xl p-2 rounded-md flex flex-row gap-2 font-bold items-center uppercase"
+                        className="bg-red-500 text-white font-bold px-2 rounded-sm flex flex-row gap-2 items-center uppercase"
                         onClick={async () => {
                             const token = UserService.getToken();
 
@@ -39,7 +39,7 @@ export const CommentCard: FC<CommentCardProps> = (props) => {
                         }}
                     >
                         <span>delete</span>
-                        <IoTrashBinOutline></IoTrashBinOutline>
+                        <IoTrashBinOutline className="text-xl"></IoTrashBinOutline>
                     </button>
                 ) : (
                     <></>

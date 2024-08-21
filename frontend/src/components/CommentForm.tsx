@@ -65,7 +65,9 @@ export const CommentForm: FC<CommentFormProps> = (props) => {
                 placeholder="write new comment"
                 className="form-input w-full"
             ></AutoHeightTextArea>
-            <button className="form-btn w-full">create</button>
+            <button className="form-btn uppercase font-bold w-full">
+                post
+            </button>
         </Form>
     );
 };

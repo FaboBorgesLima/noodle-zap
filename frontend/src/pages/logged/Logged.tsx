@@ -4,7 +4,6 @@ import { LoggedHeader } from "../../components";
 import { UserFromDb } from "../../schemas/userFromDb";
 import { LoggedContext } from "./loggedContext";
 import { UserService } from "../../services/userService";
-import { PostService } from "../../services/postService";
 
 export const Logged: FC = () => {
     const [user, setUser] = useState<UserFromDb | null>(null);
@@ -12,7 +11,7 @@ export const Logged: FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        async function loggin() {
+        async function login() {
             const token = UserService.getToken();
 
             if (!token) {
@@ -29,7 +28,7 @@ export const Logged: FC = () => {
 
             setUser({ ...userFromDb });
         }
-        loggin();
+        login();
     }, []);
 
     return (

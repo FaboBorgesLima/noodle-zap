@@ -1,16 +1,18 @@
 import { FC, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { PostService } from "../../services/postService";
 import { PostSchema } from "../../schemas/postSchema";
 import { PostHeader } from "../../components/PostHeader";
 import { CommentForm } from "../../components/CommentForm";
 import { CommentCard } from "../../components/CommentCard";
 import { UserService } from "../../services/userService";
-import { IoTrashBinOutline } from "react-icons/io5";
+import { IoArrowBackCircleOutline, IoTrashBinOutline } from "react-icons/io5";
+import { CustomFooter } from "../../components/CustomFooter";
 
 export const Post: FC<{}> = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+
     const [postNotFound, setPostNotFound] = useState(false);
     const [post, setPost] = useState<void | PostSchema>();
 
@@ -34,90 +36,106 @@ export const Post: FC<{}> = () => {
     }, [id]);
 
     return (
-        <div className="mx-auto container m-4 flex flex-col gap-4">
-            <div className="flex flex-col">
-                {post ? (
-                    <div className="flex flex-row justify-between">
-                        <PostHeader
-                            user={post.user}
-                            date={post.date}
-                            title={post.title}
-                            id={post.id}
-                        ></PostHeader>
-                        {isLoggedUserPost ? (
-                            <button
-                                className="bg-red-500 rounded-2xl p-4 flex flex-row items-center gap-4"
-                                onClick={async () => {
-                                    const wannaDelete = confirm(
-                                        "do you wanna to delete this post permanently?"
-                                    );
-
-                                    const token = UserService.getToken();
-
-                                    if (wannaDelete && token) {
-                                        const couldDelete =
-                                            await PostService.deletePost(
-                                                token,
-                                                post.id
-                                            );
-
-                                        if (couldDelete) {
-                                            navigate("/logged");
+        <div className="grow flex flex-col">
+            <div className="mx-auto container grow m-4 flex flex-col gap-4">
+                <header className="flex flex-col">
+                    {post ? (
+                        <div className="flex flex-row justify-between">
+                            <PostHeader
+                                user={post.user}
+                                date={post.date}
+                                title={post.title}
+                                id={post.id}
+                            ></PostHeader>
+                            {isLoggedUserPost ? (
+                                <button
+                                    className="bg-red-500 rounded-sm flex flex-row items-center gap-4 px-4"
+                                    onClick={async () => {
+                                        const wannaDelete = confirm(
+                                            "do you wanna to delete this post permanently?"
+                                        );
+                                        const token = UserService.getToken();
+                                        if (wannaDelete && token) {
+                                            const couldDelete =
+                                                await PostService.deletePost(
+                                                    token,
+                                                    post.id
+                                                );
+                                            if (couldDelete) {
+                                                navigate(-1);
+                                            }
                                         }
-                                    }
+                                    }}
+                                >
+                                    <span className="text-xl leading-none font-bold uppercase">
+                                        delete
+                                    </span>
+                                    <IoTrashBinOutline className="leading-none text-3xl "></IoTrashBinOutline>
+                                </button>
+                            ) : (
+                                <></>
+                            )}
+                        </div>
+                    ) : (
+                        <></>
+                    )}
+                    {!postNotFound ? (
+                        <p className="break-words whitespace-pre-line text-lg">
+                            {post?.text}
+                        </p>
+                    ) : (
+                        <span className="text-lg">
+                            post not found, do you wanna
+                            <button
+                                onClick={() => {
+                                    navigate(-1);
                                 }}
+                                className="underline"
                             >
-                                <span className="text-xl font-bold uppercase">
-                                    delete
-                                </span>
-                                <IoTrashBinOutline className="text-3xl "></IoTrashBinOutline>
+                                go back?
                             </button>
-                        ) : (
-                            <></>
-                        )}
-                    </div>
+                        </span>
+                    )}
+                </header>
+                {!postNotFound ? (
+                    <section className="gap-4 flex flex-col">
+                        <h2 className="text-2xl underline">comments</h2>
+                        <CommentForm
+                            postId={id ? id : ""}
+                            onUploadComment={(comment) => {
+                                if (post) {
+                                    post.comments.push(comment);
+                                    setPost({ ...post });
+                                }
+                            }}
+                        ></CommentForm>
+                        {post?.comments.map((comment) => (
+                            <CommentCard
+                                {...comment}
+                                postId={post.id}
+                                key={comment.id}
+                            ></CommentCard>
+                        ))}
+                    </section>
                 ) : (
                     <></>
                 )}
-                {!postNotFound ? (
-                    <p className="break-words whitespace-pre-line text-lg">
-                        {post?.text}
-                    </p>
-                ) : (
-                    <span className="text-lg">
-                        post not found, do you wanna
-                        <Link to="/logged" className="underline">
-                            {" "}
-                            go back?
-                        </Link>
-                    </span>
-                )}
             </div>
-
-            {!postNotFound ? (
-                <section className="gap-4 flex flex-col">
-                    <h2 className="text-2xl underline">comments</h2>
-                    <CommentForm
-                        postId={id ? id : ""}
-                        onUploadComment={(comment) => {
-                            if (post) {
-                                post.comments.push(comment);
-
-                                setPost({ ...post });
-                            }
+            <CustomFooter>
+                <div className="container mx-auto flex flex-row justify-end">
+                    <button
+                        onClick={() => {
+                            navigate(-1);
                         }}
-                    ></CommentForm>
-                    {post?.comments.map((comment) => (
-                        <CommentCard
-                            {...comment}
-                            postId={post.id}
-                            key={comment.id}
-                        ></CommentCard>
-                    ))}
-                </section>
-            ) : (
-                <></>
-            )}
+                        className="form-btn flex flex-row gap-2 items-center px-2"
+                    >
+                        <IoArrowBackCircleOutline className="text-3xl"></IoArrowBackCircleOutline>
+                        <span className="font-bold text-md uppercase">
+                            return
+                        </span>
+                    </button>
+                </div>
+            </CustomFooter>
         </div>
     );
 };

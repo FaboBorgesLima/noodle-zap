@@ -4,6 +4,7 @@ import { PostService } from "../../services/postService";
 import { UserService } from "../../services/userService";
 import { PostSchema } from "../../schemas/postSchema";
 import { PostCard } from "../../components/PostCard";
+import { CustomFooter } from "../../components/CustomFooter";
 
 export const Home: FC = () => {
     const [pageN, setPageN] = useState(0);
@@ -52,7 +53,7 @@ export const Home: FC = () => {
                     <></>
                 )}
             </div>
-            <footer className="sticky bottom-0 backdrop-blur-2xl p-4">
+            <CustomFooter>
                 <div className="container mx-auto flex flex-row justify-end">
                     <Link
                         to={"/logged/create-post"}
@@ -61,7 +62,7 @@ export const Home: FC = () => {
                         new post +
                     </Link>
                 </div>
-            </footer>
+            </CustomFooter>
         </div>
     );
 };

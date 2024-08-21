@@ -14,6 +14,8 @@ type PostHeaderProps = {
 };
 
 export const PostHeader: FC<PostHeaderProps> = (props) => {
+    const postLink = props.hasLinkToPost ? `/logged/post/${props.id}` : "";
+
     return (
         <Link
             className={`${props.className} ${
@@ -21,7 +23,7 @@ export const PostHeader: FC<PostHeaderProps> = (props) => {
                     ? "flex flex-row justify-between hover:animate-pulse"
                     : "pointer-events-none"
             }`}
-            to={props.hasLinkToPost ? `/logged/post/${props.id}` : ""}
+            to={postLink}
         >
             <div className="flex flex-col gap-4">
                 <h1 className="text-xl break-words whitespace-pre-line font-bold underline">
