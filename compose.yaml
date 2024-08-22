@@ -24,3 +24,20 @@ services:
     build: db/mongo
     env_file:
       - .env
+  frontend:
+    build: frontend
+    env_file:
+      - .env
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend/
+          target: /app/
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./frontend/package.json
+        - action: rebuild
+          path: ./frontend/package-lock.json
+    ports:
+      - "5173:5173"
