@@ -5,23 +5,18 @@
 
 # Dev setup
 
--   backend:
+-   copy .env.example to a .env file
 
-    -   copy .env.example to a .env file
-    -   run `npm i` for installing packages in the backend folder
-
--   frontend:
-    -   run `npm i` for installing packages in the frontend folder
+-   so the vscode intellisense understands the application types you **need** to run `npm i` on the frontend and backend folders
 
 # Running development setup
 
--   backend:
+-   for starting the application run
 
-    -   run `docker compose watch` for watching
-    -   and `docker compose up` for attaching the terminal
-    -   and in another terminal`docker compose watch`
+    ```shell
+    docker compose up --watch
+    ```
 
--   frontend:
-    -   run `npm run dev` in frontend folder
+the frontend will be running at http://127.0.0.1:5173
 
 for more details look at the [docs](/docs/)

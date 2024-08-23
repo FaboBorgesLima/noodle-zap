@@ -3,6 +3,8 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile.prod
+    ports:
+      - "8080:8080"
     env_file:
       - .env
   mysql:
@@ -17,6 +19,15 @@ services:
       - .env
     volumes:
       - mongo_data:/data
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile.prod
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+    
 volumes:
   mysql_data:
     external: false
