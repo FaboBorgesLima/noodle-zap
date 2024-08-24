@@ -1,3 +1,7 @@
+# IMPORTANT!!!
+
+**do not run tests in the deployment enviroment !!!**
+
 # Requirements
 
 -   docker engine 26
