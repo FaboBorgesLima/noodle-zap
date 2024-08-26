@@ -11,6 +11,8 @@ import { CommentModelSchemaAdapter } from "../commentModelSchemaAdapter.model";
 import { ItemInDbInt32 } from "../itemInDbInt32.model";
 import { MongodbUserModelSchemaAdapter } from "../mongodbUserModelSchemaAdapter.model";
 import { MongodbUserModel } from "../mongodbUser.model";
+import { LikeModel } from "../likeModel.model";
+import { LikeModelSchemaAdapter } from "../likeModelSchemaAdapter.model";
 
 export class PostStorage extends CommonStorage<PostModel, ObjectId> {
     protected readonly COLLECTION_NAME = "posts";
@@ -221,6 +223,23 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
             }
 
             return items;
+        } catch {}
+    }
+
+    async addLike(postId: ObjectId, like: LikeModel): Promise<void | boolean> {
+        try {
+            const res = await this.db
+                .collection<PostSchema>(this.COLLECTION_NAME)
+                .updateOne(
+                    { _id: postId },
+                    {
+                        $push: {
+                            likes: LikeModelSchemaAdapter.modelToSchema(like),
+                        },
+                    }
+                );
+
+            return res.acknowledged;
         } catch {}
     }
 }

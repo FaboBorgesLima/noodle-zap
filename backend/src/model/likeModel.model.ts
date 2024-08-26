@@ -15,6 +15,9 @@ export class LikeModel implements HasJSON {
     static load(user: ItemInDb<MongodbUserModel, Int32>, date: Date) {
         return new LikeModel(user, date);
     }
+    static create(user: ItemInDb<MongodbUserModel, Int32>) {
+        return new LikeModel(user, new Date());
+    }
 
     toJSON() {
         return {
