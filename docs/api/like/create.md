@@ -1,4 +1,5 @@
 -   route: /api/like/auth/create
+-   headers: Authorization: bearer
 -   parameters (body):
 
     ```typescript
