@@ -36,15 +36,16 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
         }
     }
     async update(
-        itemInDb: ItemInDb<PostModel>
+        itemInDb: ItemInDb<PostModel, ObjectId>
     ): Promise<ItemInDb<PostModel, ObjectId> | void> {
         try {
-            this.db
+            await this.db
                 .collection<PostSchema>(this.COLLECTION_NAME)
-                .updateOne(
+                .replaceOne(
                     { _id: ObjectId.createFromHexString(itemInDb.getId()) },
                     PostModelSchemaAdapter.modelToSchema(itemInDb.getItem())
                 );
+            return itemInDb;
         } catch {}
     }
     async delete(id: ObjectId): Promise<boolean> {
