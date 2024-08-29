@@ -16,6 +16,15 @@ export class PostModel implements HasJSON {
     private text: string;
     private user: ItemInDb<MongodbUserModel, Int32>;
     private date: Date;
+    static textValidator = Validator.validateStringLength(
+        TextSizes.POST_TEXT_MIN,
+        TextSizes.POST_TEXT_MAX
+    );
+
+    static titleValidator = Validator.validateStringLength(
+        TextSizes.POST_TITLE_MIN,
+        TextSizes.POST_TEXT_MAX
+    );
 
     private constructor(
         text: string,
@@ -66,14 +75,8 @@ export class PostModel implements HasJSON {
             date === undefined
         ) {
             const validator = new JsonValidator({
-                text: Validator.validateStringLength(
-                    TextSizes.POST_TEXT_MIN,
-                    TextSizes.POST_TEXT_MAX
-                ),
-                title: Validator.validateStringLength(
-                    TextSizes.POST_TITLE_MIN,
-                    TextSizes.POST_TEXT_MAX
-                ),
+                text: this.textValidator,
+                title: this.titleValidator,
             });
 
             const validated = validator.validate({ text, title });
@@ -104,12 +107,35 @@ export class PostModel implements HasJSON {
         return this.text;
     }
 
+    setText(text: string): boolean {
+        const validated = PostModel.textValidator(text);
+
+        if (!validated) {
+            return false;
+        }
+
+        this.text = validated;
+
+        return true;
+    }
+
     getDate() {
         return this.date;
     }
 
     getTitle() {
         return this.title;
+    }
+    setTitle(title: string): boolean {
+        const validated = PostModel.titleValidator(title);
+
+        if (!validated) {
+            return false;
+        }
+
+        this.title = validated;
+
+        return true;
     }
 
     getLikes() {
