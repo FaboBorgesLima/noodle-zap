@@ -87,7 +87,7 @@ db.createCollection("posts", {
                             usr: {
                                 bsonType: "object",
                                 title: "user that liked the post",
-                                required: ["is", "name", "email"],
+                                required: ["id", "name", "email"],
                                 properties: {
                                     id: {
                                         bsonType: "int",
