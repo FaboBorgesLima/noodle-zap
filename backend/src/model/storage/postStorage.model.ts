@@ -42,7 +42,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
             await this.db
                 .collection<PostSchema>(this.COLLECTION_NAME)
                 .replaceOne(
-                    { _id: ObjectId.createFromHexString(itemInDb.getId()) },
+                    { _id: itemInDb.getRawId() },
                     PostModelSchemaAdapter.modelToSchema(itemInDb.getItem())
                 );
             return itemInDb;
@@ -232,7 +232,14 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
             const res = await this.db
                 .collection<PostSchema>(this.COLLECTION_NAME)
                 .updateOne(
-                    { _id: postId },
+                    {
+                        _id: postId,
+                        likes: {
+                            $not: {
+                                $elemMatch: { "usr.id": like.user.getRawId() },
+                            },
+                        },
+                    },
                     {
                         $push: {
                             likes: LikeModelSchemaAdapter.modelToSchema(like),
@@ -240,7 +247,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
                     }
                 );
 
-            return res.acknowledged;
+            return res.modifiedCount > 0;
         } catch {}
     }
 }
