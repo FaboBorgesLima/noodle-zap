@@ -250,4 +250,27 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
             return res.modifiedCount > 0;
         } catch {}
     }
+
+    async removeLike(postId: ObjectId, userId: Int32): Promise<void | boolean> {
+        try {
+            const res = await this.db
+                .collection<PostSchema>(this.COLLECTION_NAME)
+                .updateOne(
+                    {
+                        _id: postId,
+                        likes: {
+                            $elemMatch: { "usr.id": userId },
+                        },
+                    },
+                    {
+                        $pull: {
+                            /**@ts-ignore */
+                            likes: { "usr.id": userId },
+                        },
+                    }
+                );
+
+            return res.modifiedCount > 0;
+        } catch {}
+    }
 }

@@ -7,7 +7,6 @@ import { MongodbUserModelSchemaAdapter } from "../model/mongodbUserModelSchemaAd
 import { mongoClient } from "../connection/mongo";
 import { HTTPCodes } from "../enum/httpCodes.enum";
 import { ResponseWithAuth } from "../middleware/auth.middleware";
-import { Int32 } from "mongodb";
 
 export class PostController {
     constructor() {}
