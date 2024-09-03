@@ -1,8 +1,6 @@
-import { Db, Int32, MongoClient, ObjectId } from "mongodb";
-import { CommonStorage } from "./commonStorage.model";
+import { Int32, MongoClient, ObjectId } from "mongodb";
 import { ItemInDb } from "../itemInDb.model";
 import { PostModel } from "../post.model";
-import { env } from "../../config/env";
 import { PostSchema } from "../../schema/post.schema";
 import { PostModelSchemaAdapter } from "../postModelSchemaAdapter.model";
 import { ItemInDbObjectId } from "../itemInDbObjectId.model";
@@ -13,22 +11,22 @@ import { MongodbUserModelSchemaAdapter } from "../mongodbUserModelSchemaAdapter.
 import { MongodbUserModel } from "../mongodbUser.model";
 import { LikeModel } from "../likeModel.model";
 import { LikeModelSchemaAdapter } from "../likeModelSchemaAdapter.model";
+import { MongoDBStorage } from "./mongodbStorage.model";
 
-export class PostStorage extends CommonStorage<PostModel, ObjectId> {
+export class PostStorage extends MongoDBStorage<PostModel, PostSchema> {
     protected readonly COLLECTION_NAME = "posts";
-    protected db: Db;
+
     constructor(protected mongoClient: MongoClient) {
-        super();
-        this.db = this.mongoClient.db(env.MONGO_INITDB_DATABASE);
+        super(mongoClient);
     }
 
     async create(
         item: PostModel
     ): Promise<ItemInDb<PostModel, ObjectId> | void> {
         try {
-            const insert = await this.db
-                .collection<PostSchema>(this.COLLECTION_NAME)
-                .insertOne(PostModelSchemaAdapter.modelToSchema(item));
+            const insert = await this.getCollection().insertOne(
+                PostModelSchemaAdapter.modelToSchema(item)
+            );
 
             return new ItemInDbObjectId(item, insert.insertedId);
         } catch (e) {
@@ -39,20 +37,16 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
         itemInDb: ItemInDb<PostModel, ObjectId>
     ): Promise<ItemInDb<PostModel, ObjectId> | void> {
         try {
-            await this.db
-                .collection<PostSchema>(this.COLLECTION_NAME)
-                .replaceOne(
-                    { _id: itemInDb.getRawId() },
-                    PostModelSchemaAdapter.modelToSchema(itemInDb.getItem())
-                );
+            await this.getCollection().replaceOne(
+                { _id: itemInDb.getRawId() },
+                PostModelSchemaAdapter.modelToSchema(itemInDb.getItem())
+            );
             return itemInDb;
         } catch {}
     }
     async delete(id: ObjectId): Promise<boolean> {
         try {
-            const res = await this.db
-                .collection<PostSchema>(this.COLLECTION_NAME)
-                .deleteOne({ _id: id });
+            const res = await this.getCollection().deleteOne({ _id: id });
 
             return res.acknowledged;
         } catch {}
@@ -60,9 +54,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
     }
     async getById(id: ObjectId): Promise<ItemInDb<PostModel, ObjectId> | void> {
         try {
-            const item = await this.db
-                .collection<PostSchema>(this.COLLECTION_NAME)
-                .findOne({ _id: id });
+            const item = await this.getCollection().findOne({ _id: id });
 
             if (!item) return;
 
@@ -77,12 +69,10 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
         user: ItemInDbInt32<MongodbUserModel>
     ): Promise<boolean> {
         try {
-            const result = await this.db
-                .collection<PostSchema>(this.COLLECTION_NAME)
-                .updateMany(
-                    { "usr.id": user.getRawId() },
-                    MongodbUserModelSchemaAdapter.modelInDbToSchema(user)
-                );
+            const result = await this.getCollection().updateMany(
+                { "usr.id": user.getRawId() },
+                MongodbUserModelSchemaAdapter.modelInDbToSchema(user)
+            );
 
             return result.acknowledged;
         } catch {}
@@ -97,8 +87,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
         try {
             const items: ItemInDb<PostModel>[] = [];
 
-            const query = this.db
-                .collection<PostSchema>(this.COLLECTION_NAME)
+            const query = this.getCollection()
                 .find()
                 .skip(page * pageSize)
                 .map(
@@ -154,12 +143,10 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
         userId: Int32
     ): Promise<boolean> {
         try {
-            const couldDelete = await this.db
-                .collection<PostSchema>(this.COLLECTION_NAME)
-                .deleteOne({
-                    _id: postId,
-                    "usr.id": userId,
-                });
+            const couldDelete = await this.getCollection().deleteOne({
+                _id: postId,
+                "usr.id": userId,
+            });
 
             return couldDelete.acknowledged;
         } catch {}
@@ -173,21 +160,19 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
         userId: Int32
     ): Promise<boolean> {
         try {
-            const res = await this.db
-                .collection<PostSchema>(this.COLLECTION_NAME)
-                .updateOne(
-                    {
-                        _id: postId,
-                        comments: {
-                            $elemMatch: { "usr.id": userId, _id: commentId },
-                        },
+            const res = await this.getCollection().updateOne(
+                {
+                    _id: postId,
+                    comments: {
+                        $elemMatch: { "usr.id": userId, _id: commentId },
                     },
-                    {
-                        $pull: {
-                            comments: { _id: commentId },
-                        },
-                    }
-                );
+                },
+                {
+                    $pull: {
+                        comments: { _id: commentId },
+                    },
+                }
+            );
 
             return res.modifiedCount == 1;
         } catch {}
@@ -202,8 +187,7 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
         try {
             const items: ItemInDb<PostModel>[] = [];
 
-            const query = this.db
-                .collection<PostSchema>(this.COLLECTION_NAME)
+            const query = this.getCollection()
                 .find({ "usr.id": userId })
                 .sort("dt", "desc")
                 .skip(page * pageSize)
@@ -229,23 +213,21 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
 
     async addLike(postId: ObjectId, like: LikeModel): Promise<void | boolean> {
         try {
-            const res = await this.db
-                .collection<PostSchema>(this.COLLECTION_NAME)
-                .updateOne(
-                    {
-                        _id: postId,
-                        likes: {
-                            $not: {
-                                $elemMatch: { "usr.id": like.user.getRawId() },
-                            },
+            const res = await this.getCollection().updateOne(
+                {
+                    _id: postId,
+                    likes: {
+                        $not: {
+                            $elemMatch: { "usr.id": like.user.getRawId() },
                         },
                     },
-                    {
-                        $push: {
-                            likes: LikeModelSchemaAdapter.modelToSchema(like),
-                        },
-                    }
-                );
+                },
+                {
+                    $push: {
+                        likes: LikeModelSchemaAdapter.modelToSchema(like),
+                    },
+                }
+            );
 
             return res.modifiedCount > 0;
         } catch {}
@@ -253,22 +235,20 @@ export class PostStorage extends CommonStorage<PostModel, ObjectId> {
 
     async removeLike(postId: ObjectId, userId: Int32): Promise<void | boolean> {
         try {
-            const res = await this.db
-                .collection<PostSchema>(this.COLLECTION_NAME)
-                .updateOne(
-                    {
-                        _id: postId,
-                        likes: {
-                            $elemMatch: { "usr.id": userId },
-                        },
+            const res = await this.getCollection().updateOne(
+                {
+                    _id: postId,
+                    likes: {
+                        $elemMatch: { "usr.id": userId },
                     },
-                    {
-                        $pull: {
-                            /**@ts-ignore */
-                            likes: { "usr.id": userId },
-                        },
-                    }
-                );
+                },
+                {
+                    $pull: {
+                        /**@ts-ignore */
+                        likes: { "usr.id": userId },
+                    },
+                }
+            );
 
             return res.modifiedCount > 0;
         } catch {}
