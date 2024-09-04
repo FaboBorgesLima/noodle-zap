@@ -8,14 +8,17 @@ import { CommentIndb } from "./commentInDb.model";
 import { JsonValidator } from "./helpers/jsonValidator.model";
 import { Validator } from "./helpers/validator.model";
 import { TextSizes } from "../enum/textSizes.enum";
+import { ItemInDbObjectId } from "./itemInDbObjectId.model";
 
 export class PostModel implements HasJSON {
     private comments: CommentIndb[] = [];
-    private likes: LikeModel[] = [];
+    private likes: ItemInDbObjectId<LikeModel>[] = [];
     private title: string;
     private text: string;
     private user: ItemInDb<MongodbUserModel, Int32>;
     private date: Date;
+    private nLikes: number;
+    private nComments: number;
     static textValidator = Validator.validateStringLength(
         TextSizes.POST_TEXT_MIN,
         TextSizes.POST_TEXT_MAX
@@ -30,12 +33,16 @@ export class PostModel implements HasJSON {
         text: string,
         user: ItemInDb<MongodbUserModel, Int32>,
         title: string,
-        date: Date
+        date: Date,
+        nLikes: number,
+        nComments: number
     ) {
         this.text = text;
         this.title = title;
         this.user = user;
         this.date = date;
+        this.nComments = nComments;
+        this.nLikes = nLikes;
     }
 
     static factory(
@@ -44,7 +51,9 @@ export class PostModel implements HasJSON {
         title: string,
         date: Date,
         comments: ItemInDb<CommentModel, ObjectId>[],
-        likes: LikeModel[]
+        likes: ItemInDbObjectId<LikeModel>[],
+        nLikes: number,
+        nComments: number
     ): PostModel;
     /**
      *
@@ -67,12 +76,16 @@ export class PostModel implements HasJSON {
         title: string,
         date?: Date,
         comments?: ItemInDb<CommentModel, ObjectId>[],
-        likes?: LikeModel[]
+        likes?: ItemInDbObjectId<LikeModel>[],
+        nLikes?: number,
+        nComments?: number
     ): PostModel | void {
         if (
             likes === undefined ||
             comments === undefined ||
-            date === undefined
+            date === undefined ||
+            nLikes === undefined ||
+            nComments === undefined
         ) {
             const validator = new JsonValidator({
                 text: this.textValidator,
@@ -86,13 +99,15 @@ export class PostModel implements HasJSON {
                     validated.text,
                     user,
                     validated.title,
-                    new Date()
+                    new Date(),
+                    0,
+                    0
                 );
 
             return;
         }
 
-        const post = new PostModel(text, user, title, date);
+        const post = new PostModel(text, user, title, date, nLikes, nComments);
 
         post.comments = comments;
         post.likes = likes;
@@ -155,5 +170,13 @@ export class PostModel implements HasJSON {
             date: this.date.getTime(),
             user: { ...this.user.getItem().toJSON(), id: this.user.getId() },
         };
+    }
+
+    getNComments() {
+        return this.nComments;
+    }
+
+    getNLikes() {
+        return this.nLikes;
     }
 }

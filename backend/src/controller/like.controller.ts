@@ -7,6 +7,8 @@ import { PostStorage } from "../model/storage/postStorage.model";
 import { HTTPCodes } from "../enum/httpCodes.enum";
 import { LikeModel } from "../model/likeModel.model";
 import { MongodbUserModelSchemaAdapter } from "../model/mongodbUserModelSchemaAdapter.model";
+import { ItemInDbObjectId } from "../model/itemInDbObjectId.model";
+import { ObjectId } from "mongodb";
 
 export class LikeController {
     private static storage = new PostStorage(mongoClient);
@@ -29,9 +31,20 @@ export class LikeController {
             )
         );
 
-        const couldLike = await this.storage.addLike(validated.postId, like);
+        const postInDb = await this.storage.getById(validated.postId);
 
-        if (couldLike) {
+        if (!postInDb) {
+            res.sendStatus(HTTPCodes.NOT_FOUND);
+            return;
+        }
+
+        const likeInDb = new ItemInDbObjectId(like, new ObjectId());
+
+        postInDb.getItem().getLikes().push(likeInDb);
+
+        const updated = await this.storage.update(postInDb);
+
+        if (updated) {
             res.sendStatus(HTTPCodes.OK);
             return;
         }

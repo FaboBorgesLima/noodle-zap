@@ -110,7 +110,7 @@ export class PostController {
             return;
         }
 
-        const couldDelete = await this.storage.deletePostFromUser(
+        const couldDelete = await this.storage.deletePostWhereUser(
             validated.id,
             res.locals.user.getRawId()
         );
@@ -137,7 +137,7 @@ export class PostController {
             return;
         }
 
-        const page = await this.storage.getUserPostsPage(
+        const page = await this.storage.getPostsPageWhereUser(
             validated.userId,
             validated.page,
             validated.pageSize

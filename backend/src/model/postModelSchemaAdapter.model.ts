@@ -3,6 +3,7 @@ import { PostModel } from "./post.model";
 import { CommentModelSchemaAdapter } from "./commentModelSchemaAdapter.model";
 import { MongodbUserModelSchemaAdapter } from "./mongodbUserModelSchemaAdapter.model";
 import { LikeModelSchemaAdapter } from "./likeModelSchemaAdapter.model";
+import { Int32 } from "mongodb";
 
 export class PostModelSchemaAdapter {
     static modelToSchema(model: PostModel): PostSchema {
@@ -21,6 +22,8 @@ export class PostModelSchemaAdapter {
             usr: MongodbUserModelSchemaAdapter.modelInDbToSchema(
                 model.getUser()
             ),
+            nLike: new Int32(model.getNLikes()),
+            nComment: new Int32(model.getNComments()),
         };
     }
 
@@ -35,7 +38,9 @@ export class PostModelSchemaAdapter {
             ),
             schema.likes.map((like) =>
                 LikeModelSchemaAdapter.schemaToModel(like)
-            )
+            ),
+            schema.nLike.value,
+            schema.nComment.value
         );
     }
 }

@@ -8,6 +8,8 @@ import { TextSizes } from "../enum/textSizes.enum";
 import { HTTPCodes } from "../enum/httpCodes.enum";
 import { CommentModel } from "../model/comment.model";
 import { MongodbUserModelSchemaAdapter } from "../model/mongodbUserModelSchemaAdapter.model";
+import { ItemInDbObjectId } from "../model/itemInDbObjectId.model";
+import { ObjectId } from "mongodb";
 
 export class CommentControler {
     private static storage = new PostStorage(mongoClient);
@@ -40,10 +42,21 @@ export class CommentControler {
             return;
         }
 
-        const commentInDb = await this.storage.addComment(
-            comment,
-            validated.postId
-        );
+        const commentInDb = new ItemInDbObjectId(comment, new ObjectId());
+
+        const postInDb = await this.storage.getById(validated.postId);
+
+        if (!postInDb) {
+            res.sendStatus(HTTPCodes.NOT_FOUND);
+            return;
+        }
+
+        postInDb.getItem().getComments().push(commentInDb);
+
+        if (!(await this.storage.update(postInDb))) {
+            res.sendStatus(HTTPCodes.SERVER_ERROR);
+            return;
+        }
 
         if (!commentInDb) {
             res.sendStatus(HTTPCodes.SERVER_ERROR);
@@ -65,13 +78,32 @@ export class CommentControler {
             return;
         }
 
-        const deleted = await this.storage.deleteCommentFromPostAndUser(
-            validated.commentId,
-            validated.postId,
-            res.locals.user.getRawId()
-        );
+        const postInDb = await this.storage.getById(validated.postId);
 
-        if (!deleted) {
+        if (!postInDb) {
+            res.sendStatus(HTTPCodes.NOT_FOUND);
+            return;
+        }
+
+        const postIndex = postInDb
+            .getItem()
+            .getComments()
+            .findIndex(
+                (comment) =>
+                    comment.getRawId().toHexString() ==
+                    validated.commentId.toHexString()
+            );
+
+        if (postIndex == -1) {
+            res.sendStatus(HTTPCodes.NOT_FOUND);
+            return;
+        }
+
+        postInDb.getItem().getComments().splice(postIndex, 1);
+
+        const updated = await this.storage.update(postInDb);
+
+        if (!updated) {
             res.sendStatus(HTTPCodes.FORBIDDEN);
             return;
         }

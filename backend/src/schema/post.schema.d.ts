@@ -10,4 +10,6 @@ export interface PostSchema {
     comments: CommentSchema[];
     likes: LikeSchema[];
     dt: Date;
+    nLike: Int32;
+    nComment: Int32;
 }

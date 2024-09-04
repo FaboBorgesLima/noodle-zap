@@ -4,13 +4,9 @@ import { PostModel } from "../post.model";
 import { PostSchema } from "../../schema/post.schema";
 import { PostModelSchemaAdapter } from "../postModelSchemaAdapter.model";
 import { ItemInDbObjectId } from "../itemInDbObjectId.model";
-import { CommentModel } from "../comment.model";
-import { CommentModelSchemaAdapter } from "../commentModelSchemaAdapter.model";
 import { ItemInDbInt32 } from "../itemInDbInt32.model";
 import { MongodbUserModelSchemaAdapter } from "../mongodbUserModelSchemaAdapter.model";
 import { MongodbUserModel } from "../mongodbUser.model";
-import { LikeModel } from "../likeModel.model";
-import { LikeModelSchemaAdapter } from "../likeModelSchemaAdapter.model";
 import { MongoDBStorage } from "./mongodbStorage.model";
 
 export class PostStorage extends MongoDBStorage<PostModel, PostSchema> {
@@ -114,31 +110,7 @@ export class PostStorage extends MongoDBStorage<PostModel, PostSchema> {
         } catch {}
     }
 
-    async addComment(
-        comment: CommentModel,
-        postId: ObjectId
-    ): Promise<ItemInDb<CommentModel, ObjectId> | void> {
-        const itemInDb = new ItemInDbObjectId(comment, new ObjectId());
-
-        const insert = await this.db
-            .collection<PostSchema>(this.COLLECTION_NAME)
-            .updateOne(
-                { _id: postId },
-                {
-                    $push: {
-                        comments:
-                            CommentModelSchemaAdapter.modelInDbToSchema(
-                                itemInDb
-                            ),
-                    },
-                }
-            );
-        if (insert.acknowledged) {
-            return itemInDb;
-        }
-    }
-
-    async deletePostFromUser(
+    async deletePostWhereUser(
         postId: ObjectId,
         userId: Int32
     ): Promise<boolean> {
@@ -154,32 +126,7 @@ export class PostStorage extends MongoDBStorage<PostModel, PostSchema> {
         return false;
     }
 
-    async deleteCommentFromPostAndUser(
-        commentId: ObjectId,
-        postId: ObjectId,
-        userId: Int32
-    ): Promise<boolean> {
-        try {
-            const res = await this.getCollection().updateOne(
-                {
-                    _id: postId,
-                    comments: {
-                        $elemMatch: { "usr.id": userId, _id: commentId },
-                    },
-                },
-                {
-                    $pull: {
-                        comments: { _id: commentId },
-                    },
-                }
-            );
-
-            return res.modifiedCount == 1;
-        } catch {}
-        return false;
-    }
-
-    async getUserPostsPage(
+    async getPostsPageWhereUser(
         userId: Int32,
         page: number,
         pageSize: number
@@ -208,49 +155,6 @@ export class PostStorage extends MongoDBStorage<PostModel, PostSchema> {
             }
 
             return items;
-        } catch {}
-    }
-
-    async addLike(postId: ObjectId, like: LikeModel): Promise<void | boolean> {
-        try {
-            const res = await this.getCollection().updateOne(
-                {
-                    _id: postId,
-                    likes: {
-                        $not: {
-                            $elemMatch: { "usr.id": like.user.getRawId() },
-                        },
-                    },
-                },
-                {
-                    $push: {
-                        likes: LikeModelSchemaAdapter.modelToSchema(like),
-                    },
-                }
-            );
-
-            return res.modifiedCount > 0;
-        } catch {}
-    }
-
-    async removeLike(postId: ObjectId, userId: Int32): Promise<void | boolean> {
-        try {
-            const res = await this.getCollection().updateOne(
-                {
-                    _id: postId,
-                    likes: {
-                        $elemMatch: { "usr.id": userId },
-                    },
-                },
-                {
-                    $pull: {
-                        /**@ts-ignore */
-                        likes: { "usr.id": userId },
-                    },
-                }
-            );
-
-            return res.modifiedCount > 0;
         } catch {}
     }
 }
