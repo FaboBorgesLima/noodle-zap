@@ -6,29 +6,23 @@ import { MongodbUserModelSchemaAdapter } from "./mongodbUserModelSchemaAdapter.m
 import { ItemInDbObjectId } from "./itemInDbObjectId.model";
 
 export class CommentModelSchemaAdapter {
-    static modelInDbToSchema(
-        model: ItemInDb<CommentModel, ObjectId>
-    ): CommentSchema {
+    static modelToSchema(model: CommentModel): CommentSchema {
         return {
-            _id: model.getRawId(),
-            dt: model.getItem().getDate(),
+            dt: model.getDate(),
             usr: MongodbUserModelSchemaAdapter.modelInDbToSchema(
-                model.getItem().getUser()
+                model.getUser()
             ),
-            text: model.getItem().getText(),
+            text: model.getText(),
+            post: model.getPostId(),
         };
     }
 
-    static schemaInModelInDb(
-        schema: CommentSchema
-    ): ItemInDb<CommentModel, ObjectId> {
-        return new ItemInDbObjectId<CommentModel>(
-            CommentModel.loadFactory(
-                schema.text,
-                MongodbUserModelSchemaAdapter.schemaToModelInDb(schema.usr),
-                schema.dt
-            ),
-            schema._id
+    static schemaToModel(schema: CommentSchema): CommentModel {
+        return CommentModel.loadFactory(
+            schema.text,
+            MongodbUserModelSchemaAdapter.schemaToModelInDb(schema.usr),
+            schema.dt,
+            schema.post
         );
     }
 }

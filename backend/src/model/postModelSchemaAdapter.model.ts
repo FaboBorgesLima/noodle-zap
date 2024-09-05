@@ -4,19 +4,26 @@ import { CommentModelSchemaAdapter } from "./commentModelSchemaAdapter.model";
 import { MongodbUserModelSchemaAdapter } from "./mongodbUserModelSchemaAdapter.model";
 import { LikeModelSchemaAdapter } from "./likeModelSchemaAdapter.model";
 import { Int32 } from "mongodb";
+import { ItemInDbObjectId } from "./itemInDbObjectId.model";
 
 export class PostModelSchemaAdapter {
     static modelToSchema(model: PostModel): PostSchema {
         return {
             comments: model
                 .getComments()
-                .map((comment) =>
-                    CommentModelSchemaAdapter.modelInDbToSchema(comment)
-                ),
+                .map((comment) => ({
+                    ...CommentModelSchemaAdapter.modelToSchema(
+                        comment.getItem()
+                    ),
+                    _id: comment.getRawId(),
+                })),
             dt: model.getDate(),
             likes: model
                 .getLikes()
-                .map((like) => LikeModelSchemaAdapter.modelToSchema(like)),
+                .map((like) => ({
+                    ...LikeModelSchemaAdapter.modelToSchema(like.getItem()),
+                    _id: like.getRawId(),
+                })),
             text: model.getText(),
             title: model.getTitle(),
             usr: MongodbUserModelSchemaAdapter.modelInDbToSchema(
@@ -33,11 +40,19 @@ export class PostModelSchemaAdapter {
             MongodbUserModelSchemaAdapter.schemaToModelInDb(schema.usr),
             schema.title,
             schema.dt,
-            schema.comments.map((comment) =>
-                CommentModelSchemaAdapter.schemaInModelInDb(comment)
+            schema.comments.map(
+                (comment) =>
+                    new ItemInDbObjectId(
+                        CommentModelSchemaAdapter.schemaToModel(comment),
+                        comment._id
+                    )
             ),
-            schema.likes.map((like) =>
-                LikeModelSchemaAdapter.schemaToModel(like)
+            schema.likes.map(
+                (like) =>
+                    new ItemInDbObjectId(
+                        LikeModelSchemaAdapter.schemaToModel(like),
+                        like._id
+                    )
             ),
             schema.nLike.value,
             schema.nComment.value

@@ -21,7 +21,7 @@ describe("comment user model schema adapter", () => {
             new ObjectId()
         );
 
-        const schema = CommentModelSchemaAdapter.modelInDbToSchema(model);
+        const schema = CommentModelSchemaAdapter.modelToSchema(model);
 
         expect(model.getId()).toBe(schema._id.toHexString());
 
@@ -37,7 +37,7 @@ describe("comment user model schema adapter", () => {
             usr: { email: "email@email", id: new Int32(0), name: "name" },
         };
 
-        const model = CommentModelSchemaAdapter.schemaInModelInDb(schema);
+        const model = CommentModelSchemaAdapter.schemaToModel(schema);
 
         expect(model.getId()).toBe(schema._id.toHexString());
 

@@ -17,6 +17,7 @@ describe("post model schema adapter", () => {
             MongodbUserModel.factory("user", "email@email.com"),
             new Int32(123)
         );
+        const postId = new ObjectId();
 
         const model = PostModel.factory(
             text,
@@ -25,11 +26,23 @@ describe("post model schema adapter", () => {
             new Date(),
             [
                 new ItemInDbObjectId(
-                    CommentModel.loadFactory("comment", user, new Date()),
+                    CommentModel.loadFactory(
+                        "comment",
+                        user,
+                        new Date(),
+                        postId
+                    ),
                     new ObjectId()
                 ),
             ],
-            [LikeModel.load(user, new Date())]
+            [
+                new ItemInDbObjectId(
+                    LikeModel.load(user, new Date(), postId),
+                    new ObjectId()
+                ),
+            ],
+            1,
+            1
         );
 
         const schema = PostModelSchemaAdapter.modelToSchema(model);
@@ -48,7 +61,7 @@ describe("post model schema adapter", () => {
 
         for (let i = 0; i < schema.likes.length; i++) {
             expect(schema.likes[i].dt.toString()).toBe(
-                model.getLikes()[i].date.toString()
+                model.getLikes()[i].getItem().date.toString()
             );
         }
     });
@@ -56,11 +69,12 @@ describe("post model schema adapter", () => {
     test("schema to model", () => {
         const text = "text";
         const title = "title";
+        const postId = new ObjectId();
 
         const schema: PostSchema = {
             usr: { id: new Int32(0), email: "email@email.com", name: "name" },
-            title: "title",
-            text: "text",
+            title,
+            text,
             comments: [
                 {
                     _id: new ObjectId(),
@@ -71,19 +85,24 @@ describe("post model schema adapter", () => {
                         id: new Int32(0),
                         name: "name",
                     },
+                    post: postId,
                 },
             ],
             likes: [
                 {
+                    _id: new ObjectId(),
                     dt: new Date(),
                     usr: {
                         email: "email@email.com",
                         id: new Int32(0),
                         name: "name",
                     },
+                    post: postId,
                 },
             ],
             dt: new Date(),
+            nLike: new Int32(1),
+            nComment: new Int32(1),
         };
 
         const model = PostModelSchemaAdapter.schemaToModel(schema);
@@ -102,7 +121,7 @@ describe("post model schema adapter", () => {
 
         for (let i = 0; i < schema.likes.length; i++) {
             expect(schema.likes[i].dt.toString()).toBe(
-                model.getLikes()[i].date.toString()
+                model.getLikes()[i].getItem().date.toString()
             );
         }
     });

@@ -28,7 +28,8 @@ export class LikeController {
         const like = LikeModel.create(
             MongodbUserModelSchemaAdapter.userModelInDbToMongodbUserModel(
                 res.locals.user
-            )
+            ),
+            validated.postId
         );
 
         const postInDb = await this.storage.getById(validated.postId);

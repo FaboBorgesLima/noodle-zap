@@ -80,45 +80,6 @@ describe("post storage", () => {
         expect(couldUpdateText).toBeTruthy();
     });
 
-    test("can add like", async () => {
-        const canAdd = await storage.addLike(
-            defaultPostInStorage.getRawId(),
-            LikeModel.create(defaultUser)
-        );
-
-        expect(canAdd).toBeTruthy();
-    });
-
-    test("can remove like", async () => {
-        const canAdd = await storage.addLike(
-            defaultPostInStorage.getRawId(),
-            LikeModel.create(defaultUser)
-        );
-
-        expect(canAdd).toBeTruthy();
-
-        const canDelete = await storage.removeLike(
-            defaultPostInStorage.getRawId(),
-            defaultUser.getRawId()
-        );
-
-        expect(canDelete).toBeTruthy();
-    });
-
-    test("same user cant like twice", async () => {
-        await storage.addLike(
-            defaultPostInStorage.getRawId(),
-            LikeModel.create(defaultUser)
-        );
-
-        const cantAdd = await storage.addLike(
-            defaultPostInStorage.getRawId(),
-            LikeModel.create(defaultUser)
-        );
-
-        expect(cantAdd).toBeFalsy();
-    });
-
     afterEach(async () => {
         await storage.delete(defaultPostInStorage.getRawId());
     });

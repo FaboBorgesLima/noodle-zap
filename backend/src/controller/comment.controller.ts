@@ -34,7 +34,8 @@ export class CommentControler {
             validated.text,
             MongodbUserModelSchemaAdapter.userModelInDbToMongodbUserModel(
                 res.locals.user
-            )
+            ),
+            validated.postId
         );
 
         if (!comment) {
