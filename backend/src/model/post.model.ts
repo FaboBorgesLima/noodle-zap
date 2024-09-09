@@ -19,6 +19,9 @@ export class PostModel implements HasJSON {
     private date: Date;
     private nLikes: number;
     private nComments: number;
+    private readonly COMMENT_MAX_ITEMS = 10;
+    private readonly LIKES_MAX_ITEMS = 10;
+
     static textValidator = Validator.validateStringLength(
         TextSizes.POST_TEXT_MIN,
         TextSizes.POST_TEXT_MAX
@@ -153,12 +156,36 @@ export class PostModel implements HasJSON {
         return true;
     }
 
+    /**
+     * # IMPORTANT
+     *
+     * you cant likes comments using this method, use setLikes for this
+     */
     getLikes() {
-        return this.likes;
+        return [...this.likes];
     }
 
+    setLikes(likes: ItemInDbObjectId<LikeModel>[]): boolean {
+        if (likes.length > 10) return false;
+
+        this.likes = likes;
+        return true;
+    }
+
+    /**
+     * # IMPORTANT
+     *
+     * you cant modify comments using this method, use setComments for this
+     */
     getComments() {
-        return this.comments;
+        return [...this.comments];
+    }
+
+    setComments(comments: ItemInDbObjectId<CommentModel>[]): boolean {
+        if (comments.length > 10) return false;
+
+        this.comments = comments;
+        return true;
     }
 
     toJSON() {
@@ -170,6 +197,79 @@ export class PostModel implements HasJSON {
             date: this.date.getTime(),
             user: { ...this.user.getItem().toJSON(), id: this.user.getId() },
         };
+    }
+
+    /**
+     *
+     * @param comment
+     * @returns the oldest comment if necessary
+     *
+     *
+     * push a new comment, return the oldest if there is more than 10 comments.
+     *
+     * will automatically increment the number of comments
+     */
+    pushNewComment(
+        comment: ItemInDbObjectId<CommentModel>
+    ): ItemInDbObjectId<CommentModel> | void {
+        if (this.comments.length >= this.COMMENT_MAX_ITEMS) {
+            const oldest = this.comments.shift();
+
+            this.nComments++;
+
+            this.comments.push(comment);
+
+            return oldest;
+        }
+    }
+
+    /**
+     *
+     * @param comment
+     * @returns the oldest comment if necessary
+     *
+     *
+     * push a new comment, return the oldest if there is more than 10 comments.
+     *
+     * will automatically increment the number of comments
+     */
+    pushNewLike(
+        comment: ItemInDbObjectId<LikeModel>
+    ): ItemInDbObjectId<LikeModel> | void {
+        if (this.likes.length >= this.LIKES_MAX_ITEMS) {
+            const oldest = this.likes.shift();
+
+            this.nLikes++;
+
+            this.likes.push(comment);
+
+            return oldest;
+        }
+    }
+
+    removeCommentById(commentId: ObjectId): boolean {
+        for (let i = 0; i < this.comments.length; i++)
+            if (
+                this.comments[i].getRawId().toHexString() ==
+                commentId.toHexString()
+            ) {
+                this.comments.splice(i, 1);
+                return true;
+            }
+
+        return false;
+    }
+
+    removeLikeById(likeId: ObjectId): boolean {
+        for (let i = 0; i < this.likes.length; i++)
+            if (
+                this.likes[i].getRawId().toHexString() == likeId.toHexString()
+            ) {
+                this.likes.splice(i, 1);
+                return true;
+            }
+
+        return false;
     }
 
     getNComments() {
