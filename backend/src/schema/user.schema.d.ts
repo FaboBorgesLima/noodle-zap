@@ -1,9 +1,9 @@
 import { RowDataPacket } from "mysql2";
+import { Schema } from "../@types/Schema";
 
-interface UserSchema extends RowDataPacket {
-    user_id: number;
+interface UserSchema extends Schema {
     email: string;
-    user_name: string;
-    user_password: string;
+    name: string;
+    password: string;
     token: string;
 }

@@ -1,17 +1,14 @@
-import { Request, Response } from "express";
-import { PostStorage } from "../model/storage/postStorage.model";
+import { Request } from "express";
 import { JsonValidator } from "../model/helpers/jsonValidator.model";
 import { Validator } from "../model/helpers/validator.model";
-import { PostModel } from "../model/post.model";
-import { MongodbUserModelSchemaAdapter } from "../model/mongodbUserModelSchemaAdapter.model";
-import { mongoClient } from "../connection/mongo";
 import { HTTPCodes } from "../enum/httpCodes.enum";
 import { ResponseWithAuth } from "../middleware/auth.middleware";
+import { ResponseEntityFactoriesProvider } from "../@types/ResponseEntityFactoriesProvider";
 
 export class PostController {
-    constructor() {}
-
-    private static storage = new PostStorage(mongoClient);
+    constructor() {
+        //
+    }
 
     static async create(req: Request, res: ResponseWithAuth) {
         const validator = new JsonValidator({
@@ -25,27 +22,25 @@ export class PostController {
             res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
-        const post = PostModel.factory(
-            validated.text,
-            MongodbUserModelSchemaAdapter.userModelInDbToMongodbUserModel(
+
+        const post =
+            res.locals.entityFactoriesProvider.factories.postFactory.fromUser(
                 res.locals.user
-            ),
-            validated.title
-        );
+            );
+        post.attributes.text = validated.text;
+        post.attributes.title = validated.title;
 
         if (!post) {
             res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
 
-        const item = await this.storage.create(post);
-
-        if (!item) {
+        if (!(await post.save())) {
             res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
 
-        res.json(item.toJSON());
+        res.json(post.toJSON());
     }
 
     static async getPage(req: Request, res: ResponseWithAuth) {
@@ -61,10 +56,11 @@ export class PostController {
             return;
         }
 
-        const posts = await this.storage.getPage(
-            validated.page,
-            validated.pageSize
-        );
+        const posts =
+            await res.locals.entityFactoriesProvider.factories.postFactory.paginate(
+                validated.page,
+                validated.pageSize
+            );
 
         if (!posts) {
             res.send(HTTPCodes.SERVER_ERROR);
@@ -76,7 +72,7 @@ export class PostController {
         });
     }
 
-    static async getById(req: Request, res: Response) {
+    static async getById(req: Request, res: ResponseEntityFactoriesProvider) {
         const validator = new JsonValidator({
             id: Validator.validateObjectIdHexString,
         });
@@ -88,7 +84,10 @@ export class PostController {
             return;
         }
 
-        const post = await this.storage.getById(validated.id);
+        const post =
+            await res.locals.entityFactoriesProvider.factories.postFactory.findById(
+                validated.id.toHexString()
+            );
 
         if (!post) {
             res.sendStatus(HTTPCodes.BAD_REQUEST);
@@ -110,15 +109,23 @@ export class PostController {
             return;
         }
 
-        const couldDelete = await this.storage.deletePostWhereUser(
-            validated.id,
-            res.locals.user.getRawId()
-        );
+        const post =
+            await res.locals.entityFactoriesProvider.factories.postFactory.findById(
+                validated.id.toHexString()
+            );
 
-        if (!couldDelete) {
+        if (!post) {
+            res.sendStatus(HTTPCodes.NOT_FOUND);
+            return;
+        }
+
+        console.debug(post, res.locals.user);
+        if (!post.canUserDelete(res.locals.user)) {
             res.sendStatus(HTTPCodes.FORBIDDEN);
             return;
         }
+
+        await post.destroy();
 
         res.sendStatus(HTTPCodes.OK);
     }
@@ -137,19 +144,19 @@ export class PostController {
             return;
         }
 
-        const page = await this.storage.getPostsPageWhereUser(
-            validated.userId,
-            validated.page,
-            validated.pageSize
-        );
-
-        if (!page) {
-            res.sendStatus(HTTPCodes.SERVER_ERROR);
-            return;
-        }
+        const userPosts =
+            await res.locals.entityFactoriesProvider.factories.postFactory.where(
+                [
+                    {
+                        col: "usr",
+                        operator: "=",
+                        value: res.locals.user.toMongodb(),
+                    },
+                ]
+            );
 
         res.json({
-            posts: page.map((post) => post.toJSON()),
+            posts: userPosts.map((post) => post.toJSON()),
         });
     }
 }

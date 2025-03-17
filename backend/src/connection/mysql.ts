@@ -7,4 +7,5 @@ export const pool = createPool({
     password: env.MYSQL_PASSWORD,
     database: env.MYSQL_DATABASE,
     connectionLimit: 10,
+    namedPlaceholders: true,
 });

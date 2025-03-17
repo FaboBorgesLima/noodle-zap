@@ -1,17 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { UserStorage } from "../model/storage/userStorage.model";
 import { BearerToken } from "../model/helpers/bearerToken.model";
-import { UserModel } from "../model/user.model";
-import { ItemInDb } from "../model/itemInDb.model";
-import { Int32 } from "mongodb";
-import { pool } from "../connection/mysql";
-import { mongoClient } from "../connection/mongo";
+import { UserModel } from "../model/entities/user.model";
 import { HTTPCodes } from "../enum/httpCodes.enum";
+import { ResponseEntityFactoriesProvider } from "../@types/ResponseEntityFactoriesProvider";
 
 export class Auth {
     static async middleware(
         req: Request,
-        res: Response,
+        res: ResponseWithAuth,
         next: NextFunction
     ): Promise<void> {
         const token = BearerToken.getToken(req.headers.authorization);
@@ -22,22 +18,25 @@ export class Auth {
             return;
         }
 
-        const userStorage = new UserStorage(pool, mongoClient);
+        const userFactory =
+            res.locals.entityFactoriesProvider.factories.userFactory;
 
-        const user = await userStorage.getByToken(token);
+        const users = await userFactory.where([
+            { col: "token", operator: "=", value: token },
+        ]);
 
-        if (!user) {
+        if (users.length != 1) {
             res.sendStatus(HTTPCodes.FORBIDDEN);
 
             return;
         }
+
+        const [user] = users;
 
         res.locals.user = user;
 
         next();
     }
 }
-export type ResponseWithAuth = Response<
-    any,
-    { user: ItemInDb<UserModel, Int32> }
->;
+export interface ResponseWithAuth
+    extends ResponseEntityFactoriesProvider<{ user: UserModel }> {}

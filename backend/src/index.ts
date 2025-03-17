@@ -1,8 +1,9 @@
 import express from "express";
 import { apiRoutes } from "./routes/api.routes";
 import cors from "cors";
+import { EntityFactoriesProvider } from "./middleware/entityFactoriesProvider.middleware";
 
-async function main() {
+function main() {
     const port = 8080;
     const app = express();
 
@@ -13,10 +14,13 @@ async function main() {
         next();
     });
 
+    app.use(EntityFactoriesProvider.middleware.bind(EntityFactoriesProvider));
+
     app.use("/api", apiRoutes);
 
     app.listen(port, () => {
         console.log(`started at ${port}`);
     });
 }
+
 main();

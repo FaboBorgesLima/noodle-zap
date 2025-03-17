@@ -1,20 +1,14 @@
 import { Request, Response } from "express";
-import { UserStorage } from "../model/storage/userStorage.model";
 import { JsonValidator } from "../model/helpers/jsonValidator.model";
 import { Validator } from "../model/helpers/validator.model";
-import { UserModel } from "../model/user.model";
 import { HashMaker } from "../model/helpers/hashMaker.model";
-import { ItemInDb } from "../model/itemInDb.model";
-import { pool } from "../connection/mysql";
 import { HTTPCodes } from "../enum/httpCodes.enum";
-import { mongoClient } from "../connection/mongo";
+import { ResponseEntityFactoriesProvider } from "../@types/ResponseEntityFactoriesProvider";
+import { RandomTokenMaker } from "../model/helpers/randomTokenMaker.model";
+import { ResponseWithAuth } from "../middleware/auth.middleware";
 
 export class UserController {
-    private static async getUserStorage(): Promise<UserStorage> {
-        return new UserStorage(pool, mongoClient);
-    }
-
-    static async create(req: Request, res: Response) {
+    static async create(req: Request, res: ResponseEntityFactoriesProvider) {
         const validator = new JsonValidator({
             email: Validator.validateEmail,
             password: Validator.validatePassword,
@@ -27,29 +21,27 @@ export class UserController {
             res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
+        const userFactory =
+            res.locals.entityFactoriesProvider.factories.userFactory;
 
-        const user = UserModel.createFactory(
-            validated.name,
-            validated.email,
-            validated.password
-        );
+        const user = userFactory.factory({
+            name: validated.name,
+            email: validated.email,
+            password: HashMaker.make(validated.password),
+            token: RandomTokenMaker.make(),
+        });
 
-        if (!user) {
+        try {
+            user.save();
+        } catch {
             res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
 
-        const userInDb = await (await this.getUserStorage()).create(user);
-
-        if (!userInDb) {
-            res.sendStatus(HTTPCodes.BAD_REQUEST);
-            return;
-        }
-
-        res.json({ user: userInDb.getItem().toJSON(), id: userInDb.getId() });
+        res.json({ user: user.toJSON() });
     }
 
-    static async login(req: Request, res: Response) {
+    static async login(req: Request, res: ResponseEntityFactoriesProvider) {
         const validator = new JsonValidator({
             email: Validator.validateEmail,
             password: Validator.validatePassword,
@@ -63,26 +55,35 @@ export class UserController {
             return;
         }
 
-        const userInDb = await (
-            await this.getUserStorage()
-        ).getByEmailPassword(
-            validated.email,
-            HashMaker.make(validated.password)
-        );
+        const users =
+            await res.locals.entityFactoriesProvider.factories.userFactory.where(
+                [
+                    { col: "email", operator: "=", value: validated.email },
+                    {
+                        col: "password",
+                        operator: "=",
+                        value: HashMaker.make(validated.password),
+                    },
+                ]
+            );
 
-        if (!userInDb) {
+        if (!users) {
             res.sendStatus(HTTPCodes.BAD_REQUEST);
 
             return;
         }
 
+        const [user] = users;
+
         res.status(HTTPCodes.OK).json({
-            user: userInDb.getItem().toJSON(),
-            id: userInDb.getId(),
+            user: user.toJSON(),
         });
     }
 
-    static async findByName(req: Request, res: Response) {
+    static async findByName(
+        req: Request,
+        res: ResponseEntityFactoriesProvider
+    ) {
         const validator = new JsonValidator({ name: Validator.validateName });
 
         const validated = validator.validate(req.params);
@@ -92,19 +93,24 @@ export class UserController {
             return;
         }
 
-        const user = await (
-            await this.getUserStorage()
-        ).getByName(validated.name);
+        const users =
+            await res.locals.entityFactoriesProvider.factories.userFactory.where(
+                [{ col: "name", operator: "=", value: validated.name }]
+            );
 
-        if (!user) {
+        if (!users) {
             res.sendStatus(HTTPCodes.NOT_FOUND);
             return;
         }
+        const [user] = users;
 
-        res.json({ id: user.getId(), name: user.getItem().getName() });
+        res.json({ id: user.id, name: user.getName() });
     }
 
-    static async loginViaToken(req: Request, res: Response) {
+    static async loginViaToken(
+        req: Request,
+        res: ResponseEntityFactoriesProvider
+    ) {
         const validator = new JsonValidator({
             token: Validator.validateStringLength(44),
         });
@@ -116,32 +122,37 @@ export class UserController {
             return;
         }
 
-        const userInDb = await (
-            await this.getUserStorage()
-        ).getByToken(validated.token);
+        const users =
+            await res.locals.entityFactoriesProvider.factories.userFactory.where(
+                [{ col: "token", operator: "=", value: validated.token }]
+            );
 
-        if (!userInDb) {
+        if (!users) {
             res.sendStatus(HTTPCodes.BAD_REQUEST);
             return;
         }
 
+        const [user] = users;
+
         res.status(200).json({
-            user: userInDb.getItem().toJSON(),
-            id: userInDb.getId(),
+            user: user.toJSON(),
+            id: user.id,
         });
     }
 
-    static async logout(
-        req: Request,
-        res: Response<any, { user: ItemInDb<UserModel, number> }>
-    ) {
+    static async logout(req: Request, res: ResponseWithAuth) {
         const { user } = res.locals;
 
-        user.getItem().randomizeToken();
+        let couldSave = false;
 
-        const newUser = await (await this.getUserStorage()).update(user);
+        try {
+            couldSave = await user.randomizeToken().save();
+        } catch {
+            res.sendStatus(HTTPCodes.SERVER_ERROR);
+            return;
+        }
 
-        if (newUser) {
+        if (couldSave) {
             res.sendStatus(HTTPCodes.OK);
             return;
         }

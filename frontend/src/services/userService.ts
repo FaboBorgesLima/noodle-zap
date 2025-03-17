@@ -126,6 +126,6 @@ export class UserService {
             return false;
         }
 
-        return user.id == id;
+        return user.user.id == id;
     }
 }

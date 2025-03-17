@@ -8,9 +8,9 @@
         user: {
             name:string,
             token:string,
-            email:string
+            email:string,
+            id: string
         },
-        id: string
     }
     ```
     -   code 400:

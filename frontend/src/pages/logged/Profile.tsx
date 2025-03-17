@@ -33,7 +33,7 @@ export const Profile: FC = () => {
             console.log(`loading page ${pageN} ...`);
 
             PostService.getPostByUser(
-                user.id,
+                user.user.id,
                 pageN,
                 PAGE_LENGTH,
                 user.user.token

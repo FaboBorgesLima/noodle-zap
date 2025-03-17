@@ -19,7 +19,7 @@ const userSchema = {
 const likeSchema = {
     bsonType: "object",
     title: "like schema",
-    required: ["dt", "usr", "_id"],
+    required: ["dt", "usr", "_id", "postId"],
     properties: {
         _id: {
             bsonType: "objectId",
@@ -27,6 +27,9 @@ const likeSchema = {
         usr: userSchema,
         dt: {
             bsonType: "date",
+        },
+        postId: {
+            bsonType: "objectId",
         },
     },
 };

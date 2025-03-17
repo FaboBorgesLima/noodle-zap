@@ -1,4 +1,4 @@
-import { CommentRouteController } from "../../controller/comment.route.controller";
+import { CommentRouteController } from "../../controller/comment.controller";
 import { Auth } from "../../middleware/auth.middleware";
 import express from "express";
 

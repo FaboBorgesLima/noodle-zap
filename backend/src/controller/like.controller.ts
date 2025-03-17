@@ -3,11 +3,9 @@ import { mongoClient } from "../connection/mongo";
 import { ResponseWithAuth } from "../middleware/auth.middleware";
 import { JsonValidator } from "../model/helpers/jsonValidator.model";
 import { Validator } from "../model/helpers/validator.model";
-import { PostStorage } from "../model/storage/postStorage.model";
+import { PostStorage } from "../model/storage/postStorage";
 import { HTTPCodes } from "../enum/httpCodes.enum";
-import { LikeModel } from "../model/likeModel.model";
-import { MongodbUserModelSchemaAdapter } from "../model/mongodbUserModelSchemaAdapter.model";
-import { ItemInDbObjectId } from "../model/itemInDbObjectId.model";
+import { LikeModel } from "../model/entities/likeModel.model";
 import { ObjectId } from "mongodb";
 
 export class LikeController {
@@ -25,25 +23,29 @@ export class LikeController {
             return;
         }
 
-        const like = LikeModel.create(
-            MongodbUserModelSchemaAdapter.userModelInDbToMongodbUserModel(
-                res.locals.user
-            ),
-            validated.postId
+        const { factories } = res.locals.entityFactoriesProvider;
+
+        const post = await factories.postFactory.findById(
+            validated.postId.toHexString()
         );
 
-        const postInDb = await this.storage.getById(validated.postId);
-
-        if (!postInDb) {
+        if (!post) {
             res.sendStatus(HTTPCodes.NOT_FOUND);
             return;
         }
 
-        const likeInDb = new ItemInDbObjectId(like, new ObjectId());
+        const like = factories.likeFactory.forPostFromUser(
+            post.id ?? "",
+            res.locals.user
+        );
 
-        postInDb.getItem().getLikes().push(likeInDb);
+        const oldLike = post.pushNewLike(like);
 
-        const updated = await this.storage.update(postInDb);
+        if (oldLike) {
+            await oldLike.save();
+        }
+
+        const updated = await post.save();
 
         if (updated) {
             res.sendStatus(HTTPCodes.OK);
